@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Базовое содержимое всех страниц">
+
+  <title>WHAT && WHY && HOW</title>
+  <link rel="icon" type="image/x-icon" href="./static/img/favicon.ico">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+    rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+    crossorigin="anonymous">
+  
+  <link href="./static/css/index.css" rel="stylesheet">
+  <link href="./static/css/base.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="header">
+    <div class="d-flex align-items-center p-3 flex-wrap justify-content-between" style="max-width: 1400px; margin: 0 auto;">
+      <div class="d-flex align-items-center flex-grow-1">
+        <div class="flex-shrink-0">
+          <a href="./index.html">
+            <img src="./static/img/question.png" 
+              class="img-fluid"
+              style="width: 80px; height: auto;">
+          </a>
+        </div>
+
+        <div class="input-group ms-3" style="width: 40%; min-width: 280px;">
+          <input type="text" class="form-control border-primary-subtle bg-light"
+            placeholder="Type question..." aria-label="Question" style="border-width: 2px;">
+          <button class="btn btn-success" type="button">
+            Search
+          </button>
+        </div>
+
+        <div class="d-flex ms-3">
+          <a href="./ask.html">
+            <button class="btn btn-info btn-md px-4">
+              Ask
+            </button>
+          </a>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 mt-2 mt-sm-0">
+        <a href="./login.html">
+          <button class="btn btn-secondary btn-md px-4">
+            Log in
+          </button>
+        </a>
+        <a href="./register.html">
+          <button class="btn btn-primary btn-md px-4">
+            Register
+          </button>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="main-content">
+      <div class="mb-4">
+        <h2 class="fw-bold text-info" style="border-left: 5px solid #0dcaf0; padding-left: 1rem;">
+          New Questions
+        </h2>
+      </div>
+
+      <div class="question">
+        <div class="d-flex">
+          <div class="question-avatar">
+            <img src="./static/img/first_avatar.jpg" 
+              class="question-avatar img-fluid">
+          </div>
+          <div class="flex-grow-1" style="margin-left: 0.5rem; margin-right: 0.5rem;">
+            <div class="question-title">
+              <a class="link-offset-2 link-underline link-underline-opacity-0 text-dark" href="./question.html">
+                Как посчитать интеграл?
+              </a>
+            </div>
+            <div class="question-text">
+              Не могу решить неопределенный интеграл: (5x+3)/(x^2+3)*dx. Как это сделать?
+            </div>
+            <div class="d-flex flex-wrap">
+              <div style="margin-right: 0.5rem;">
+                <strong>Tags:</strong>
+              </div>
+              <div>
+                <a href="#" class="tag-badge">Math</a>
+                <a href="#" class="tag-badge">University</a>
+                <a href="#" class="tag-badge">Data Analys</a>
+              </div>
+              <div style="margin-left: 1.0rem;">
+                <a class="link-offset-2 link-underline link-underline-opacity-0 text-dark" href="#">
+                  <strong>Answers</strong>: <span class="answer-count">13</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="vote-controls">
+            <button class="btn btn-outline-success btn-sm vote-btn">
+              <strong>+</strong>
+            </button>
+            <span class="vote-count">24</span>
+            <button class="btn btn-outline-danger btn-sm vote-btn">
+              <strong>-</strong>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="d-flex">
+          <div class="question-avatar">
+            <img src="./static/img/second_avatar.jpg" 
+              class="question-avatar img-fluid">
+          </div>
+          <div class="flex-grow-1" style="margin-left: 0.5rem; margin-right: 0.5rem;">
+            <div class="question-title">
+              <a class="link-offset-2 link-underline link-underline-opacity-0 text-dark" href="./question.html">
+                Как отсортировать массив в C++, используя встроенные функции?
+              </a>
+            </div>
+            <div class="question-text">
+              Требуется отсортировать массив точек по расстоянию от центра системы координат до точки.
+            </div>
+            <div class="d-flex flex-wrap">
+              <div style="margin-right: 0.5rem;">
+                <strong>Tags:</strong>
+              </div>
+              <div>
+                <a href="#" class="tag-badge">C++</a>
+                <a href="#" class="tag-badge">Geometry</a>
+              </div>
+              <div style="margin-left: 1.0rem;">
+                <a class="link-offset-2 link-underline link-underline-opacity-0 text-dark" href="#">
+                  <strong>Answers</strong>: <span class="answer-count">12</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="vote-controls">
+            <button class="btn btn-outline-success btn-sm vote-btn">
+              <strong>+</strong>
+            </button>
+            <span class="vote-count">3</span>
+            <button class="btn btn-outline-danger btn-sm vote-btn">
+              <strong>-</strong>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="d-flex">
+          <div class="question-avatar">
+            <img src="./static/img/third_avatar.png" 
+              class="question-avatar img-fluid">
+          </div>
+          <div class="flex-grow-1" style="margin-left: 0.5rem; margin-right: 0.5rem;">
+            <div class="question-title">
+              <a class="link-offset-2 link-underline link-underline-opacity-0 text-dark" href="./question.html">
+                Как перенаправить стандартный вывод и вывод ошибок в один файл в Linux?
+              </a>
+            </div>
+            <div class="question-text">
+              Хочу весь вывод утилиты find перенаправить в файл out.txt. Как это сделать? Дистрибутив: Ubuntu 22. 
+            </div>
+            <div class="d-flex flex-wrap">
+              <div style="margin-right: 0.5rem;">
+                <strong>Tags:</strong>
+              </div>
+              <div>
+                <a href="#" class="tag-badge">Linux</a>
+              </div>
+              <div style="margin-left: 1.0rem;">
+                <a class="link-offset-2 link-underline link-underline-opacity-0 text-dark" href="#">
+                  <strong>Answers</strong>: <span class="answer-count">2</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="vote-controls">
+            <button class="btn btn-outline-success btn-sm vote-btn">
+              <strong>+</strong>
+            </button>
+            <span class="vote-count">35</span>
+            <button class="btn btn-outline-danger btn-sm vote-btn">
+              <strong>-</strong>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="d-flex">
+          <div class="question-avatar">
+            <img src="./static/img/fourth_avatar.jpg" 
+              class="question-avatar img-fluid">
+          </div>
+          <div class="flex-grow-1" style="margin-left: 0.5rem; margin-right: 0.5rem;">
+            <div class="question-title">
+              <a class="link-offset-2 link-underline link-underline-opacity-0 text-dark" href="./question.html">
+                Хочу стать разработчиком: с чего начать, что надо знать?
+              </a>
+            </div>
+            <div class="question-text">
+              Я десятиклассник. Все мои одноклассники изучают питон, а в школе проходят паскаль. Что сейчас востребовано и как разбираться в теме программирования?
+            </div>
+            <div class="d-flex flex-wrap">
+              <div style="margin-right: 0.5rem;">
+                <strong>Tags:</strong>
+              </div>
+              <div>
+                <a href="#" class="tag-badge">School</a>
+                <a href="#" class="tag-badge">Start</a>
+                <a href="#" class="tag-badge">Intern</a>
+                <a href="#" class="tag-badge">Easy</a>
+              </div>
+              <div style="margin-left: 1.0rem;">
+                <a class="link-offset-2 link-underline link-underline-opacity-0 text-dark" href="#">
+                  <strong>Answers</strong>: <span class="answer-count">87</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="vote-controls">
+            <button class="btn btn-outline-success btn-sm vote-btn">
+              <strong>+</strong>
+            </button>
+            <span class="vote-count">3</span>
+            <button class="btn btn-outline-danger btn-sm vote-btn">
+              <strong>-</strong>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <ul class="pagination">
+        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+      </ul>
+    </div>
+
+    <div class="sidebar">
+      <div class="popular-tags">
+        <div class="text-center mb-3">
+          <h2 class="section-title">Popular tags</h2>
+        </div>
+        <div class="popular-tags-content">
+          <span class="popular-tag" style="color: #ff8c00; font-size: 1.2rem;">Python</span>
+          <span class="popular-tag" style="color: #ce5c00; font-size: 1.1rem;">Rust</span>
+          <span class="popular-tag" style="color: #2c3e50; font-size: 1rem;">C++</span>
+          <span class="popular-tag" style="color: #17a2b8; font-size: 0.95rem;">Math</span>
+          <span class="popular-tag" style="color: #dc3545; font-size: 1rem;">Linux</span>
+          <span class="popular-tag" style="color: #20c997; font-size: 0.9rem;">Django</span>
+          <span class="popular-tag" style="color: #fd7e14; font-size: 1rem;">Go</span>
+        </div>
+      </div>
+
+      <div class="best-members">
+        <div class="text-center mb-3">
+          <h2 class="section-title" style="border-bottom-color: #0d6efd;">Best members</h2>
+        </div>
+        <div>
+          <div class="member">
+            <a class="link-primary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="#">
+              <h5 class="mb-1">
+                Petrov Ivan
+              </h5>
+            </a>
+          </div>
+          <div class="member">
+            <a class="link-danger link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="#">
+              <h5 class="mb-1">
+                Соболев Игнат
+              </h5>
+            </a>
+          </div>
+          <div class="member">
+            <a class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="#">
+              <h5 class="mb-1">
+                Федотов Максим
+              </h5>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="container">
+      <h2>WHAT && WHY && HOW</h2>
+      <hr>
+      <p>Интересна та или иная тема? Задай вопрос или найди уже готовый ответ.</p>
+    </div>
+  </div>
+
+</body>
+</html>

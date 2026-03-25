@@ -1,0 +1,41 @@
+.answers-header {
+    margin-bottom: 0.7rem;
+}
+
+.answer {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+    border: 0.1rem solid #f9d10c;
+}
+
+.correct-answer {
+    border: 0.2rem solid #0dc82cd5
+}
+
+.answer-avatar {
+    align-self: center;
+    align-items: center;
+    margin-right: 0.5rem;
+}
+
+.answer-avatar img {
+    width: 80px;
+    height: auto;
+    border: 0.1rem solid #2893eabe;
+    border-radius: 0.7rem;
+    padding: 0.2rem;
+}
+
+.answer-text {
+    color: #010910eb;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+}
+
+.prompt-primary {
+    background: #55a8f0fe;
+    font-weight: 500;
+    color: black;
+}
