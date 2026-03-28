@@ -21,10 +21,6 @@ body {
     min-width: 0;
 }
 
-/*
-Сюда вставлять контент
-*/
-
 .sidebar {
     flex: 1;
     max-width: 320px;
