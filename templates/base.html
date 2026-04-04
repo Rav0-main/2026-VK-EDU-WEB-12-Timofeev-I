@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
   
@@ -6,13 +8,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
   <title>WHAT && WHY && HOW</title>
-  <link rel="icon" type="image/x-icon" href="./static/img/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
 
-  <link rel="stylesheet" href="./static/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
   
-  <link href="./static/css/base.css" rel="stylesheet">
-  <link href="./static/css/ask.css" rel="stylesheet">
-  <link href="./static/css/question.css" rel="stylesheet">
+  {% block head %}
+  {% endblock %}
+  <link href="{% static 'css/base.css' %}" rel="stylesheet">
 </head>
 
 <body>
@@ -20,8 +22,8 @@
     <div class="d-flex align-items-center p-3 flex-wrap justify-content-between" style="max-width: 1400px; margin: 0 auto;">
       <div class="d-flex align-items-center flex-grow-1">
         <div class="flex-shrink-0">
-          <a href="./index.html">
-            <img src="./static/img/question.png" 
+          <a href="{% url 'questions:index' %}">
+            <img src="{% static 'img/question.png' %}" 
               class="img-fluid"
               style="width: 80px; height: auto;">
           </a>
@@ -36,7 +38,7 @@
         </div>
 
         <div class="d-flex ms-3">
-          <a href="./ask.html">
+          <a href="{% url 'ask:index' %}">
             <button class="btn btn-info btn-md px-4">
               Ask
             </button>
@@ -44,63 +46,27 @@
         </div>
       </div>
 
-      <div class="d-flex gap-2 mt-2 mt-sm-0" style="align-items: flex-start;">
-        <div class="user-avatar" style="margin-right: 0.5rem;">
-          <img class="img-fluid user-avatar" src="./static/img/third_avatar.png">
-        </div>
-        <div style="flex: 1;">
-          <h5 class="mb-3">
-            NickName
-          </h5>
-          <div class="d-flex gap-2">
-            <a href="./settings.html">
-              <button class="btn btn-secondary btn-sm">
-                Settings
-              </button>
-            </a>
-            <button class="btn btn-danger btn-sm">
-              Log Out
-            </button>
-          </div>
-        </div>
+      <div class="d-flex gap-2 mt-2 mt-sm-0">
+        <a href="./login.html">
+          <button class="btn btn-secondary btn-md px-4">
+            Log in
+          </button>
+        </a>
+        <a href="./register.html">
+          <button class="btn btn-primary btn-md px-4">
+            Register
+          </button>
+        </a>
       </div>
     </div>
   </div>
 
   <div class="main">
-    <div class="main-content" style="width: 95%;">
-      <div class="mb-4">
-        <h2 class="fw-bold text-info" style="border-left: 5px solid #0dcaf0; padding-left: 1rem;">
-          New Question
-        </h2>
-      </div>
-  
-      <div class="mb-3" style="padding-right: 1.5rem;">
-        <div class="input-group input-group-lg">
-          <span class="input-group-text prompt-primary">Title: </span>
-          <textarea class="form-control" placeholder="Type title..."></textarea>
-        </div>
-      </div>
+    <div class="main-content">
 
-      <div class="mb-3" style="padding-right: 1.5rem;">
-        <div class="input-group input-group-lg">
-          <span class="input-group-text prompt-primary">Question: </span>
-          <textarea class="form-control" placeholder="Type question..." style="height: 12rem;"></textarea>
-        </div>
-      </div>
-
-      <div class="mb-4" style="padding-right: 1.5rem;">
-        <div class="input-group input-group-lg">
-          <span class="input-group-text prompt-primary">Tags: </span>
-          <textarea class="form-control" placeholder="Type tag(s)..."></textarea>
-        </div>
-      </div>
-
-      <div style="margin-right: 1.5rem; display: flex; justify-content: flex-end;">
-        <button class="btn btn-primary btn-lg" style="width: 6rem;">
-          Ask
-        </button>
-      </div>
+      {% block content %}
+      {% endblock %}
+      
     </div>
 
     <div class="sidebar">
