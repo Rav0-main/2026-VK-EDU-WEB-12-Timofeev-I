@@ -55,7 +55,8 @@ def index(request: django.http.HttpRequest):
     return render(
         request,
         "questions/index.html",
-        context={"questions": page.object_list, "page": page}
+        context={"questions": page.object_list, "page": page,
+                 "logined": False}
     )
 
 def hot(request: django.http.HttpRequest):
@@ -66,7 +67,8 @@ def hot(request: django.http.HttpRequest):
     return render(
         request,
         "questions/hot.html",
-        context={"questions": page.object_list, "page": page}
+        context={"questions": page.object_list, "page": page,
+                 "logined": False}
     )
 
 def question(request: django.http.HttpRequest, number: int):
@@ -87,7 +89,8 @@ def question(request: django.http.HttpRequest, number: int):
     return render(
         request,
         "questions/answers.html",
-        context={"question": question, "answers": answers_page, "page": page}
+        context={"question": question, "answers": answers_page, "page": page,
+                 "logined": False}
     )
 
 def tag(request: django.http.HttpRequest, tag: str):
@@ -103,5 +106,6 @@ def tag(request: django.http.HttpRequest, tag: str):
     return render(
         request,
         "questions/tag.html",
-        context={"questions": page.object_list, "page": page, "tag": tag}
+        context={"questions": page.object_list, "page": page, "tag": tag,
+                 "logined": False}
     )

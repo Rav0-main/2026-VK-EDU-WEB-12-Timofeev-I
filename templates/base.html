@@ -12,9 +12,14 @@
 
   <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
   
+  {% if logined %}
+  <link rel="stylesheet" href="{% static 'css/avatar.css' %}">
+  {% endif %}
+
   {% block head %}
   {% endblock %}
-  <link href="{% static 'css/base.css' %}" rel="stylesheet">
+  
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
 </head>
 
 <body>
@@ -46,18 +51,42 @@
         </div>
       </div>
 
+      {% if logined %}
+      <div class="d-flex gap-2 mt-2 mt-sm-0" style="align-items: flex-start;">
+        <div class="user-avatar" style="margin-right: 0.5rem;">
+          <img class="img-fluid user-avatar" src="#">
+        </div>
+        <div style="flex: 1;">
+          <h5 class="mb-3">
+            NickName
+          </h5>
+          <div class="d-flex gap-2">
+            <a href="{% url 'core:settings' %}">
+              <button class="btn btn-secondary btn-sm">
+                Settings
+              </button>
+            </a>
+            <button class="btn btn-danger btn-sm">
+              Log Out
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {% else %}
       <div class="d-flex gap-2 mt-2 mt-sm-0">
-        <a href="./login.html">
+        <a href="{% url 'core:login' %}">
           <button class="btn btn-secondary btn-md px-4">
             Log in
           </button>
         </a>
-        <a href="./register.html">
+        <a href="{% url 'core:register' %}">
           <button class="btn btn-primary btn-md px-4">
             Register
           </button>
         </a>
       </div>
+      {% endif %}
     </div>
   </div>
 

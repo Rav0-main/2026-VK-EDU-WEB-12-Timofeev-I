@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/prompt-primary.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <h2 class="fw-bold text-info" style="border-left: 5px solid #0dcaf0; padding-left: 1rem;">
+    Registration
+  </h2>
+</div>
+
+<div class="mb-3">
+  <h5 class="text-danger">
+    Sorry, this email address already registered!
+  </h5>
+</div>
+
+<div class="mb-3" style="padding-right: 1.5rem;">
+  <div class="input-group">
+    <span class="input-group-text prompt-primary">Login: </span>
+    <textarea class="form-control" placeholder="Type login..."></textarea>
+  </div>
+</div>
+
+<div class="mb-4" style="padding-right: 1.5rem;">
+  <div class="input-group">
+    <span class="input-group-text prompt-primary">Email: </span>
+    <textarea class="form-control" placeholder="Type email..."></textarea>
+  </div>
+</div>
+
+<div class="mb-5" style="padding-right: 1.5rem;">
+  <div class="input-group">
+    <span class="input-group-text prompt-primary">NickName: </span>
+    <textarea class="form-control" placeholder="Type nickname..."></textarea>
+  </div>
+</div>
+
+<div class="mb-4" style="padding-right: 1.5rem;">
+  <div class="input-group">
+    <span class="input-group-text prompt-primary">Password: </span>
+    <textarea class="form-control" placeholder="Type password..."></textarea>
+  </div>
+</div>
+
+<div class="mb-4" style="padding-right: 1.5rem;">
+  <div class="input-group">
+    <span class="input-group-text prompt-primary">Repeat password: </span>
+    <textarea class="form-control" placeholder="Repeat password..."></textarea>
+  </div>
+</div>
+
+<div class="input-group mb-5" style="padding-right: 1.5rem; max-width: 380px;">
+  <input type="file" class="form-control" accept="image/*">
+</div>
+
+<div style="margin: 0.7rem 0; text-align: left;">
+  <button class="btn btn-primary btn-lg">Register</button>
+</div>
+{% endblock %}

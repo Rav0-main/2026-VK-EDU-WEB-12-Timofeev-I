@@ -56,6 +56,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [BASE_DIR / "questions" / "templates",
                  BASE_DIR / "ask" / "templates",
+                 BASE_DIR / "core" / "templates",
                  BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
