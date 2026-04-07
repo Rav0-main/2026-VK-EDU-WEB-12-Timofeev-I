@@ -121,7 +121,6 @@ STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / "questions" / "static",
-    BASE_DIR / "ask" / "static",
     BASE_DIR / "static"
 ]
 
