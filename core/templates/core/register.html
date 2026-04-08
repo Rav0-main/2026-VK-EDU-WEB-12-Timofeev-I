@@ -18,46 +18,48 @@
   </h5>
 </div>
 
-<div class="mb-3" style="padding-right: 1.5rem;">
-  <div class="input-group">
-    <span class="input-group-text prompt-primary">Login: </span>
-    <textarea class="form-control" placeholder="Type login..."></textarea>
+<form class="mb-4" style="margin-right: 1.0rem; max-width: 500px; padding-right: 1.5rem;">
+  <div class="form-group mb-3">
+    <div class="input-group" style="height: 3.3rem">
+      <span class="input-group-text prompt-primary">Login: </span>
+      <input type="text" class="form-control" placeholder="Type login...">
+    </div>
   </div>
-</div>
 
-<div class="mb-4" style="padding-right: 1.5rem;">
-  <div class="input-group">
-    <span class="input-group-text prompt-primary">Email: </span>
-    <textarea class="form-control" placeholder="Type email..."></textarea>
+  <div class="form-group mb-4">
+    <div class="input-group" style="height: 3.3rem">
+      <span class="input-group-text prompt-primary">Email: </span>
+      <input type="email" class="form-control" placeholder="Type email...">
+    </div>
   </div>
-</div>
 
-<div class="mb-4" style="padding-right: 1.5rem;">
-  <div class="input-group">
-    <span class="input-group-text prompt-primary">NickName: </span>
-    <textarea class="form-control" placeholder="Type nickname..."></textarea>
+  <div class="form-group mb-4">
+    <div class="input-group" style="height: 3.3rem">
+      <span class="input-group-text prompt-primary">NickName: </span>
+      <input type="text" class="form-control" placeholder="Type nickname...">
+    </div>
   </div>
-</div>
 
-<div class="mb-4" style="padding-right: 1.5rem;">
-  <div class="input-group" style="height: 3.5rem;">
-    <span class="input-group-text prompt-primary">Password: </span>
-    <input type="password" class="form-control" placeholder="Type password...">
+  <div class="form-group mb-3">
+    <div class="input-group" style="height: 3.3rem">
+      <span class="input-group-text prompt-primary">Password: </span>
+      <input type="password" class="form-control" placeholder="Type password...">
+    </div>
   </div>
-</div>
 
-<div class="mb-4" style="padding-right: 1.5rem;">
-  <div class="input-group" style="height: 3.5rem;">
-    <span class="input-group-text prompt-primary">Repeat password: </span>
-    <input type="password" class="form-control" placeholder="Type password...">
+  <div class="form-group mb-4">
+    <div class="input-group" style="height: 3.3rem">
+      <span class="input-group-text prompt-primary">Repeat password: </span>
+      <input type="password" class="form-control" placeholder="Repeat password...">
+    </div>
   </div>
-</div>
 
-<div class="input-group mb-5" style="padding-right: 1.5rem; max-width: 380px;">
-  <input type="file" class="form-control" accept="image/*">
-</div>
+  <div class="form-group mb-3" style="height: 3.3rem">
+    <div class="input-group mb-5" style="padding-right: 1.5rem; max-width: 380px;">
+      <input type="file" class="form-control" accept="image/*">
+    </div>
+  </div>
 
-<div style="margin: 0.7rem 0; text-align: left;">
-  <button class="btn btn-primary btn-lg">Register</button>
-</div>
+  <button type="submit" class="btn btn-primary btn-lg">Register</button>
+</form>
 {% endblock %}
