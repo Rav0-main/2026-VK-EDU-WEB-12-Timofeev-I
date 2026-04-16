@@ -76,3 +76,11 @@ def tag(request: django.http.HttpRequest, tag: str):
                  "popular_tags": questions.get_popular_tags(questions.QUESTIONS)
                  }
     )
+
+def ask(request: django.http.HttpRequest):
+    return render(
+        request, "questions/ask.html", context={
+            "logined": True,
+            "popular_tags": questions.get_popular_tags(questions.QUESTIONS)
+        }
+    )
