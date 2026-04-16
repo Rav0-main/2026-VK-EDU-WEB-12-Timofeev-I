@@ -6,17 +6,17 @@ from typing import (overload,
 
 @dataclass
 class Question:
-    id: str
+    id: int
     title: str
     text: str
     tags: list[str]
-    answer_count: str
-    vote_count: str
+    answer_count: int
+    vote_count: int
 
 @dataclass
 class Answer:
     text: str
-    vote_count: str
+    vote_count: int
     is_correct: bool
 
 @dataclass
@@ -29,28 +29,28 @@ DEFAULT_POPULAR_TAGS_COUNT: int = 7
 
 ANSWERS: dict[str, list[Answer]] = {
     "correct": [
-        Answer("Correct #1", "34", True),
-        Answer("Correct #2", "10", True),
-        Answer("Correct #3", "5", True)
+        Answer("Correct #1", 34, True),
+        Answer("Correct #2", 10, True),
+        Answer("Correct #3", 5, True)
     ],
     "not_checked": [
-        Answer("Not checked #1", "2", False),
-        Answer("Not checked #2", "0", False),
-        Answer("Not checked #3", "5", False),
-        Answer("Not checked #4", "0", False)
+        Answer("Not checked #1", 2, False),
+        Answer("Not checked #2", 0, False),
+        Answer("Not checked #3", 5, False),
+        Answer("Not checked #4", 0, False)
     ]
 }
 
 QUESTIONS = [
     Question(
-        id=f"{i}",
+        id=i,
         title=f"Title #{i}",
         text=f"Question text #{i}",
         tags=[
             f"Tag_{j}" for j in range(1, (i+1) % 5 + 2)
         ],
-        answer_count=f"{(i+ (i+1) % 7) % 15}",
-        vote_count=f"{(i+ (i % 4) + 3) % 13}",
+        answer_count=(i+ (i+1) % 7) % 15,
+        vote_count=(i+ (i % 4) + 3) % 13,
     )
     for i in range(0, 30)
 ]
@@ -109,3 +109,8 @@ def get_popular_tags(
     ]
 
     return popular_tags
+
+def get_hot_questions(questions: List[Question]) -> List[Question]:
+    return list(
+        sorted(questions, key=lambda q: q.vote_count, reverse=True)
+    )

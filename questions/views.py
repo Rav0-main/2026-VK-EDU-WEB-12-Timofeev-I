@@ -29,7 +29,9 @@ class HotQuestionsView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         page_number: int = pagination.get_page_number_from(self.request)
-        page = pagination.get_page_of(questions.QUESTIONS[::-1], page_number)
+        page = pagination.get_page_of(
+            questions.get_hot_questions(questions.QUESTIONS), page_number
+        )
 
         context["questions"] = page.object_list
         context["page"] = page
