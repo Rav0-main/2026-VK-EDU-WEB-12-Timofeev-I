@@ -1,28 +1,39 @@
-from django.shortcuts import render
-import django.http
+from typing import Any
+from django.views.generic.base import TemplateView
 
 from application import questions
 
-def login(request: django.http.HttpRequest):
-    return render(
-        request, "core/login.html", context={
-            "logined": False,
-            "popular_tags": questions.get_popular_tags(questions.QUESTIONS)
-        }
-    )
+class LoginView(TemplateView):
+    template_name: str = "core/login.html"
 
-def register(request: django.http.HttpRequest):
-    return render(
-        request, "core/register.html", context={
-            "logined": False,
-            "popular_tags": questions.get_popular_tags(questions.QUESTIONS)
-        }
-    )
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
 
-def profile(request: django.http.HttpRequest):
-    return render(
-        request, "core/settings.html", context={
-            "logined": True,
-            "popular_tags": questions.get_popular_tags(questions.QUESTIONS)
-        }
-    )
+        context["logined"] = False
+        context["popular_tags"] = questions.get_popular_tags(questions.QUESTIONS)
+
+        return context
+
+
+class RegisterView(TemplateView):
+    template_name: str = "core/register.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        context["logined"] = False
+        context["popular_tags"] = questions.get_popular_tags(questions.QUESTIONS)
+
+        return context
+
+
+class ProfileView(TemplateView):
+    template_name: str = "core/settings.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        context["logined"] = True
+        context["popular_tags"] = questions.get_popular_tags(questions.QUESTIONS)
+
+        return context
