@@ -48,11 +48,10 @@ class QuestionView(TemplateView):
         context = super().get_context_data(**kwargs)
         number = kwargs["number"]
 
-        question = questions.QUESTIONS[0]
         try:
             question = questions.QUESTIONS[number]
         except IndexError:
-            pass
+            ...
     
         page_number = pagination.get_page_number_from(self.request)
 

@@ -18,6 +18,8 @@
   </h2>
 </div>
 
+{% if answers.correct or answers.not_checked %}
+
 {% for correct_answer in answers.correct %}
 <div class="answer correct-answer d-flex">
   <div class="answer-avatar">
@@ -73,6 +75,14 @@
   </div>
 </div>
 {% endfor %}
+
+{% else %}
+
+<div class="mb-3 text-danger" style="font-size: 1.2rem; font-weight: 500">
+  No answers, you can first!
+</div>
+
+{% endif %}
 
 {% include 'questions/partials/pagination.html' %}
 
