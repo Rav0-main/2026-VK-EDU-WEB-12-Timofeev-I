@@ -1,0 +1,15 @@
+{% if questions %}
+
+{% for question in questions %}
+<div style="margin-bottom: 0.9rem;">
+  {% include 'questions/partials/question.html' %}
+</div>
+{% endfor %}
+
+{% else %}
+
+<div class="mb-3 text-danger" style="font-size: 1.2rem; font-weight: 500">
+  No questions, you can first!
+</div>
+
+{% endif %}

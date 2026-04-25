@@ -1,0 +1,43 @@
+{% load static %}
+<div class="question d-flex" style="margin: 0;">
+  <div class="question-avatar">
+    <img src="#"
+      class="question-avatar img-fluid">
+  </div>
+  <div class="flex-grow-1" style="margin-left: 0.5rem; margin-right: 0.5rem;">
+    <div class="question-title">
+      <a class="link-offset-2 link-underline link-underline-opacity-0 text-dark"
+        href="{% url 'questions:answers' number=question.id %}">
+        {{ question.title }}
+      </a>
+    </div>
+    <div class="question-text">
+      {{ question.text }}
+    </div>
+    <div class="d-flex flex-wrap">
+      <div style="margin-right: 0.5rem;">
+        <strong>Tags:</strong>
+      </div>
+      <div>
+        {% for tag in question.tags %}
+        <a href="{% url 'questions:tag' tag %}" class="tag-badge">{{ tag }}</a>
+        {% endfor %}
+      </div>
+      <div style="margin-left: 1.0rem;">
+        <a class="link-offset-2 link-underline link-underline-opacity-0 text-dark"
+          href="{% url 'questions:answers' number=question.id %}">
+          <strong>Answers</strong>: <span class="answer-count">{{ question.answer_count }}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="vote-controls">
+    <button class="btn btn-outline-success btn-sm vote-btn">
+      <strong>+</strong>
+    </button>
+    <span class="vote-count">{{ question.vote_count }}</span>
+    <button class="btn btn-outline-danger btn-sm vote-btn">
+      <strong>-</strong>
+    </button>
+  </div>
+</div>

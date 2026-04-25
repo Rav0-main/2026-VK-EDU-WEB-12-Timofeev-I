@@ -1,0 +1,97 @@
+{% extends 'base.html' %} 
+
+{% block head %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'questions/css/answers.css' %}">
+<link rel="stylesheet" href="{% static 'questions/css/index.css' %}">
+<link rel="stylesheet" href="{% static 'css/prompt-primary.css' %}">
+{% endblock %}
+
+{% block content %}
+<div style="border: 0.2rem solid black; padding: 0; border-radius: 12px; margin-bottom: 0.9rem;">
+  {% include 'questions/partials/question.html' %}
+</div>
+
+<div class="answers-header">
+  <h2 class="mb-2 text-info">
+    Answers
+  </h2>
+</div>
+
+{% if answers.correct or answers.not_checked %}
+
+{% for correct_answer in answers.correct %}
+<div class="answer correct-answer d-flex">
+  <div class="answer-avatar">
+    <img src="#" class="answer-avatar img-fluid">
+  </div>
+  <div class="flex-grow-1" style="margin-left: 0.5rem; margin-right: 0.5rem; display: flex; flex-direction: column;">
+    <div class="answer-text">
+      {{ correct_answer.text }}
+    </div>
+
+    <div class="d-flex flex-wrap" style="margin-top: auto;">
+      <h5 class="text-success">
+        Correct.
+      </h5>
+    </div>
+  </div>
+  <div class="vote-controls">
+    <button class="btn btn-outline-success btn-sm vote-btn">
+      <strong>+</strong>
+    </button>
+    <span class="vote-count">{{ correct_answer.vote_count }}</span>
+    <button class="btn btn-outline-danger btn-sm vote-btn">
+      <strong>-</strong>
+    </button>
+  </div>
+</div>
+{% endfor %}
+
+{% for not_checked_answer in answers.not_checked %}
+<div class="answer d-flex">
+  <div class="answer-avatar">
+    <img src="#" class="answer-avatar img-fluid">
+  </div>
+  <div class="flex-grow-1" style="margin-left: 0.5rem; margin-right: 0.5rem; display: flex; flex-direction: column;">
+    <div class="answer-text">
+      {{ not_checked_answer.text }}
+    </div>
+
+    <div class="d-flex flex-wrap" style="margin-top: auto;">
+      <h5 class="text-warning">
+        Not checked.
+      </h5>
+    </div>
+  </div>
+  <div class="vote-controls">
+    <button class="btn btn-outline-success btn-sm vote-btn">
+      <strong>+</strong>
+    </button>
+    <span class="vote-count">{{ not_checked_answer.vote_count }}</span>
+    <button class="btn btn-outline-danger btn-sm vote-btn">
+      <strong>-</strong>
+    </button>
+  </div>
+</div>
+{% endfor %}
+
+{% else %}
+
+<div class="mb-3 text-danger" style="font-size: 1.2rem; font-weight: 500">
+  No answers, you can first!
+</div>
+
+{% endif %}
+
+{% include 'questions/partials/pagination.html' %}
+
+<div class="input-group" style="height: 7.5rem;">
+  <span class="input-group-text prompt-primary">Your solution: </span>
+  <textarea class="form-control" placeholder="Type your solution..." required></textarea>
+</div>
+
+<div style="margin: 0.7rem; margin-right: 0; display: flex; justify-content: flex-end;">
+  <button class="btn btn-primary btn-lg">Solve</button>
+</div>
+{% endblock %}
