@@ -1,5 +1,6 @@
 from typing import Any
 from django.views.generic.base import TemplateView
+from questions.models import Question, Tag
 
 from application import questions
 from questions import pagination
@@ -11,13 +12,14 @@ class NewQuestionsView(TemplateView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
-        page_number: int = pagination.get_page_number_from(self.request)
-        page = pagination.get_page_of(questions.QUESTIONS, page_number)
-
+        page_number = pagination.get_page_number_from(self.request)
+        new_questions = Question.get_new_questions(page_number, pagination.RECORDS_PER_PAGE)
+        page = pagination.get_page_of(new_questions, page_number)
+    
         context["questions"] = page.object_list
         context["page"] = page
         context["logined"] = False
-        context["popular_tags"] = questions.get_popular_tags(questions.QUESTIONS)
+        context["popular_tags"] = Tag.get_tops_str(questions.DEFAULT_POPULAR_TAGS_COUNT)
 
         return context
     

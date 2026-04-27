@@ -8,14 +8,14 @@ from typing import (overload,
 class Question:
     id: int
     title: str
-    text: str
+    content: str
     tags: list[str]
     answer_count: int
     vote_count: int
 
 @dataclass
 class Answer:
-    text: str
+    content: str
     vote_count: int
     is_correct: bool
 
@@ -45,7 +45,7 @@ QUESTIONS = [
     Question(
         id=i,
         title=f"Title #{i}",
-        text=f"Question text #{i}",
+        content=f"Question text #{i}",
         tags=[
             f"Tag_{j}" for j in range(1, (i+1) % 5 + 2)
         ],
@@ -99,16 +99,17 @@ def get_popular_tags(
         sorted(counted_tags, key=lambda tag: counted_tags[tag], reverse=True)
     )[:count]
 
-    popular_tags = [
+    return form_popular_tags(popular_tag_names)
+
+def form_popular_tags(tag_names: List[str]) -> List[PopularTag]:
+    return [
         PopularTag(
-            name=popular_tag_names[i],
+            name=tag_names[i],
             color=POPULAR_TAGS_COLORS[i % len(POPULAR_TAGS_COLORS)],
             font_size=POPULAR_TAGS_FONT_SIZES[i % len(POPULAR_TAGS_FONT_SIZES)]
         )
-        for i in range(len(popular_tag_names))
+        for i in range(len(tag_names))
     ]
-
-    return popular_tags
 
 def get_hot_questions(questions: List[Question]) -> List[Question]:
     return list(
