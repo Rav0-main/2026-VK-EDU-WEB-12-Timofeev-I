@@ -1,5 +1,7 @@
 from django.contrib import admin
-from questions.models import Question, QuestionLike, Tag, Answer, AnswerLike
+from questions.models import (Question, QuestionLike,
+                              Tag, TagContent,
+                              Answer, AnswerLike)
 
 
 @admin.register(Question)
@@ -38,7 +40,7 @@ class QuestionLikeAdmin(admin.ModelAdmin):
     ]
 
     search_fields = [
-        "question", "author"
+        "question__title", "author__username"
     ]
 
     list_filter = [
@@ -49,15 +51,25 @@ class QuestionLikeAdmin(admin.ModelAdmin):
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = [
-        "id", "question", "name"
+        "id", "question", "content__name"
     ]
 
     raw_id_fields = [
-        "question"
+        "question", "content"
     ]
 
     search_fields = [
-        "iname"
+        "name"
+    ]
+
+@admin.register(TagContent)
+class TagContentAdmin(admin.ModelAdmin):
+    list_display = [
+        "id", "name"
+    ]
+
+    search_fields = [
+        "name"
     ]
 
 

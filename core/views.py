@@ -1,7 +1,8 @@
 from typing import Any
 from django.views.generic.base import TemplateView
 
-from application import questions
+from application import config
+from questions import models
 
 class LoginView(TemplateView):
     template_name: str = "core/login.html"
@@ -10,7 +11,9 @@ class LoginView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         context["logined"] = False
-        context["popular_tags"] = questions.get_popular_tags(questions.QUESTIONS)
+        context["popular_tags"] = models.Tag.objects.get_popular_tags(
+            config.POPULAR_TAGS_COUNT
+        )
 
         return context
 
@@ -22,7 +25,9 @@ class RegisterView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         context["logined"] = False
-        context["popular_tags"] = questions.get_popular_tags(questions.QUESTIONS)
+        context["popular_tags"] = models.Tag.objects.get_popular_tags(
+            config.POPULAR_TAGS_COUNT
+        )
 
         return context
 
@@ -34,6 +39,8 @@ class ProfileView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         context["logined"] = True
-        context["popular_tags"] = questions.get_popular_tags(questions.QUESTIONS)
+        context["popular_tags"] = models.Tag.objects.get_popular_tags(
+            config.POPULAR_TAGS_COUNT
+        )
 
         return context
