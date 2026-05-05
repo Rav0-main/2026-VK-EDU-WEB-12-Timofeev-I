@@ -5,6 +5,11 @@ from questions.models import Question, Tag
 from application import config
 from questions import pagination
 
+"""
+СДЕЛАТЬ НОРМ ГЕНЕРАЦИЮ ДАННЫХ ДЛЯ БД
+СДЕЛАТЬ НОРМ ПАГИНАЦИЮ - ОПТИМИЗИРОВАТЬ: ВОЗВРАЩАТЬ ВСЮ БД В МАССИВЕ - СИЛЬНО
+"""
+
 
 class NewQuestionsView(TemplateView):
     template_name: str = "questions/index.html"

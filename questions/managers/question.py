@@ -13,7 +13,7 @@ class QuestionManager(models.Manager):
         return [
             self.__form_question(q) \
             for q in self.filter(tags__content__name=tag_name)
-        ][(page_number-1) * questions_per_page: page_number * questions_per_page]
+        ]#[(page_number-1) * questions_per_page: page_number * questions_per_page]
 
     def get_new_questions(
             self, page_number: int, questions_per_page: int
@@ -21,7 +21,7 @@ class QuestionManager(models.Manager):
         return [
             self.__form_question(q) \
             for q in self.all().order_by("-published_datetime").prefetch_related("tags")
-        ][(page_number-1) * questions_per_page: page_number * questions_per_page]
+        ]#[(page_number-1) * questions_per_page: page_number * questions_per_page]
     
     def get_question_by_id(self, question_id: int) -> 'QuestionDisplay | None':
         try:
@@ -54,7 +54,7 @@ class QuestionManager(models.Manager):
             answer.is_correct, answer.vote_count, answer.published_datetime
         ), reverse=True)
 
-        return answers_list[(page_number-1) * answers_per_page: page_number * answers_per_page]
+        return answers_list#[(page_number-1) * answers_per_page: page_number * answers_per_page]
         
     def get_hot_questions(
             self, page_number: int, questions_per_page: int
@@ -67,10 +67,10 @@ class QuestionManager(models.Manager):
 
         questions_list.sort(key=lambda q: q.vote_count, reverse=True)
 
-        return questions_list[
-            (page_number - 1) * questions_per_page:
-            page_number * questions_per_page
-        ]
+        return questions_list#[
+            #(page_number - 1) * questions_per_page:
+            #page_number * questions_per_page
+        #]
     
     def __form_question(self, question) -> 'QuestionDisplay':
         return QuestionDisplay(

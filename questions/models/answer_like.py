@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext as _
 
+from questions.models._like_type import LikeType
+
 class AnswerLike(models.Model):
     answer = models.ForeignKey(
         "Answer", on_delete=models.CASCADE, verbose_name=_("Ответ"), related_name="likes"
@@ -8,15 +10,15 @@ class AnswerLike(models.Model):
     author = models.ForeignKey("auth.User", on_delete=models.CASCADE, verbose_name=_("Автор"))
 
     class Types:
-        positive = "+"
+        positive: LikeType = "+"
         positive_verbose = _("Положительный")
 
-        negative = "-"
+        negative: LikeType = "-"
         negative_verbose = _("Отрицательный")
 
         types = [
-            (positive, positive_verbose),
-            (negative, negative_verbose)
+            (positive, positive_verbose), #type: ignore
+            (negative, negative_verbose) #type: ignore
         ]
 
     type = models.CharField(max_length=32, choices=Types.types, verbose_name="Тип лайка")

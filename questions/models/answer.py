@@ -17,7 +17,7 @@ class Answer(models.Model):
 
     class Meta:
         unique_together = [
-            "author", "content"
+            "question", "author", "content"
         ]
 
         verbose_name = _("Ответ")

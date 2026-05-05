@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext as _
+from questions.models._like_type import LikeType
 
 class QuestionLike(models.Model):
     question = models.ForeignKey(
@@ -8,10 +9,10 @@ class QuestionLike(models.Model):
     author = models.ForeignKey("auth.User", on_delete=models.CASCADE, verbose_name=_("Автор"))
 
     class Types:
-        positive = "+"
+        positive: LikeType = "+"
         positive_verbose = _("Положительный")
 
-        negative = "-"
+        negative: LikeType = "-"
         negative_verbose = _("Отрицательный")
 
         types = [
