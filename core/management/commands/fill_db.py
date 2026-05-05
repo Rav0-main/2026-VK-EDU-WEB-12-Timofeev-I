@@ -1,20 +1,26 @@
-from typing import Any, overload, Union
+from typing import Any
+
 from django.contrib.auth.models import User
-from django.core.management.base import BaseCommand, CommandParser, CommandError
+from django.core.management.base import BaseCommand, CommandParser
+
 from random import randint
 
 from core.models import UserProfile
 from questions.models import Question, Answer, Tag, TagContent, AnswerLike, QuestionLike
 from questions.models._like_type import LikeType
 
-"""
-СДЕЛАТЬ ТАК, ЧТОБЫ ДЛЯ БОЛЬШИХ RATIO ТОЖЕ РАБОТАЛО
-"""
+USERS_LIST_LIMIT: int = 10
 
 class UsersCreator:
-    users_list_limit: int = 200
+    users_list_limit: int = USERS_LIST_LIMIT
 
-    def append_users(self, count: int):
+    def append_users(self, count: int) -> tuple[list[User], list[UserProfile]]:
+        if count > self.users_list_limit or count < 0:
+            raise ValueError(f"Users count must be >= 0 and <= {self.users_list_limit}.")
+        
+        elif count == 0:
+            return ([], [])
+
         last_user = User.objects.all().order_by("-id").first()
         last_user_id: int = 0
         
@@ -29,28 +35,11 @@ class UsersCreator:
             )
 
             last_user_id += 1
-            
-            if len(users) >= self.users_list_limit:
-                User.objects.bulk_create(
-                    user[0] for user in users
-                )
 
-                UserProfile.objects.bulk_create(
-                    user[1] for user in users
-                )
-
-                users.clear()
-
-        if users:
-            User.objects.bulk_create(
-                user[0] for user in users
-            )
-
-            UserProfile.objects.bulk_create(
-                user[1] for user in users
-            )
-
-            users.clear()
+        return (
+            [user[0] for user in users],
+            [user[1] for user in users]
+        )
 
     def __get_user(self, user_id: int) -> tuple[User, UserProfile]:
         user = User()
@@ -69,23 +58,26 @@ class UsersCreator:
     
 
 class QuestionsCreator:
-    questions_list_limit: int = 200
-    def append_questions(self, users: list[User], questions_per_user: int):
+    questions_list_limit: int = 10 * USERS_LIST_LIMIT
+
+    def create_questions(self, users: list[User], questions_per_user: int) -> list[Question]:
+        if len(users) == 0:
+            return []
+        
+        elif len(users) * questions_per_user > self.questions_list_limit or \
+            questions_per_user < 0:
+            raise ValueError(f"Questions count must be >= 0 and <= {self.questions_list_limit}")
+        
+        elif questions_per_user == 0:
+            return []
+
         questions = []
         for user in users:
             questions.extend(
                 self.__get_questions(questions_per_user, user)
             )
 
-            if len(questions) >= self.questions_list_limit:
-                Question.objects.bulk_create(questions)
-
-                questions.clear()
-
-        if questions:
-            Question.objects.bulk_create(questions)
-
-            questions.clear()
+        return questions
 
     def __get_questions(self, questions_per_user: int, user: User) -> list[Question]:
         return [
@@ -99,27 +91,22 @@ class QuestionsCreator:
     
 
 class AnswersCreator:
-    answers_list_limit: int = 200
-    def append_answers(self, questions: list[Question], answer_authors: list[User]):
+    answers_list_limit: int = 100 * USERS_LIST_LIMIT
+
+    def create_answers(self, questions: list[Question], answer_authors: list[User]) -> list[Answer]:
+        if len(questions) * len(answer_authors) == 0:
+            return []
+
+        elif len(answer_authors) * len(questions) > self.answers_list_limit:
+            raise ValueError(f"Answers count must be >= 0 and <= {self.answers_list_limit}.")
+        
         answers = []
         for question in questions:
             answers.extend(
                 self.__get_answers(question, answer_authors)
             )
 
-            if len(answers) >= self.answers_list_limit:
-                Answer.objects.bulk_create(
-                    answers
-                )
-
-                answers.clear()
-
-        if answers:
-            Answer.objects.bulk_create(
-                answers
-            )
-
-            answers.clear()
+        return answers
 
     def __get_answers(self, question: Question, authors: list[User]) -> list[Answer]:
         return [
@@ -137,10 +124,16 @@ class AnswersCreator:
     
 
 class TagCreator:
-    tag_contents_list_limit: int = 200
-    tags_list_limit: int = 200
+    tag_contents_list_limit: int = USERS_LIST_LIMIT
+    tags_list_limit: int = 100 * USERS_LIST_LIMIT
 
-    def append_tag_contents(self, count: int):
+    def create_tag_contents(self, count: int) -> list[TagContent]:
+        if count > self.tag_contents_list_limit or count < 0:
+            raise ValueError(f"Tag contents count must be >= 0 and <= {self.tag_contents_list_limit}.")
+        
+        elif count == 0:
+            return []
+
         last_tag = TagContent.objects.all().order_by("-id").first()
         last_tag_id: int = 0
 
@@ -156,21 +149,15 @@ class TagCreator:
             )
 
             last_tag_id += 1
-            if len(tag_contents) >= self.tag_contents_list_limit:
-                TagContent.objects.bulk_create(
-                    tag_contents
-                )
 
-                tag_contents.clear()
-
-        if tag_contents:
-            TagContent.objects.bulk_create(
-                tag_contents
-            )
-
-            tag_contents.clear()
-
-    def append_tags_to_questions(self, questions: list[Question], tag_contents: list[TagContent]):
+        return tag_contents
+    
+    def create_tags_to_questions(
+            self, questions: list[Question], tag_contents: list[TagContent]
+        ) -> list[Tag]:
+        if len(questions) * len(tag_contents) == 0:
+            return []
+        
         tags = []
         for question in questions:
             tags.extend(
@@ -178,81 +165,50 @@ class TagCreator:
                 for i in range(randint(1, len(tag_contents)))
             )
             
-            if len(tags) >= self.tags_list_limit:
-                Tag.objects.bulk_create(
-                    tags
-                )
-
-                tags.clear()
-
-        if tags:
-            Tag.objects.bulk_create(
-                tags
-            )
-
-            tags.clear()
-
+        return tags
+    
 
 class LikeCreator:
-    likes_list_limit: int = 200
+    likes_list_limit: int = 200 * USERS_LIST_LIMIT
 
-    @overload
-    def append_likes_to(self, like_owners: list[Question], users: list[User]) -> None:
-        ...
-
-    @overload
-    def append_likes_to(self, like_owners: list[Answer], users: list[User]) -> None:
-        ...
-
-    def append_likes_to(self, like_owners: Union[list[Question], list[Answer]], users: list[User]) -> None:
-        assert like_owners and users and \
-            (isinstance(like_owners[0], Question) or isinstance(like_owners[0], Answer))
-
-        is_question_likes = isinstance(like_owners[0], Question)
-        likes = []
-        for obj in like_owners:
-            if is_question_likes:
-                likes.extend(
-                    QuestionLike(
-                        question=obj,
-                        author=users[i],
-                        type=self.__rand_like_type()
-                    )
-                    for i in range(len(users))
+    def create_question_likes_to(
+            self, questions: list[Question], users: list[User]
+        ) -> list[QuestionLike]:
+        if len(questions) * len(users) == 0:
+            return []
+        
+        likes: list[QuestionLike] = []
+        for question in questions:
+            likes.extend(
+                QuestionLike(
+                    question=question,
+                    author=users[i],
+                    type=self.__rand_like_type()
                 )
-            else:
-                likes.extend(
-                    AnswerLike(
-                        answer=obj,
-                        author=users[i],
-                        type=self.__rand_like_type()
-                    )
-                    for i in range(len(users))
+                for i in range(len(users))
+            )
+
+        return likes
+    
+    def create_answer_likes_to(
+            self, answers: list[Answer], users: list[User]
+        ) -> list[AnswerLike]:
+
+        if len(answers) * len(users) == 0:
+            return []
+        
+        likes: list[AnswerLike] = []
+        for answer in answers:
+            likes.extend(
+                AnswerLike(
+                    answer=answer,
+                    author=users[i],
+                    type=self.__rand_like_type()
                 )
+                for i in range(len(users))
+            )
 
-            if len(likes) >= self.likes_list_limit:
-                if is_question_likes:
-                    QuestionLike.objects.bulk_create(
-                        likes
-                    )
-
-                else:
-                    AnswerLike.objects.bulk_create(
-                        likes
-                    )
-
-                likes.clear()
-
-        if likes:
-            if is_question_likes:
-                QuestionLike.objects.bulk_create(
-                    likes
-                )
-
-            else:
-                AnswerLike.objects.bulk_create(
-                    likes
-                )
+        return likes
         
     def __rand_like_type(self) -> LikeType:
         return "+" if randint(0, 1) == 1 else "-"
@@ -265,8 +221,8 @@ class Command(BaseCommand, UsersCreator, QuestionsCreator, AnswersCreator, TagCr
         3) Answers count = RATIO * 100
         4) Different tags = RATIO
         5) User likes count:
-            5.1) Question likes count = RATIO * 70
-            5.2) Answer likes count = RATIO * 130
+            5.1) Question likes count = RATIO * 100
+            5.2) Answer likes count = RATIO * 100
     """
 
     def add_arguments(self, parser: CommandParser) -> None:
@@ -275,22 +231,27 @@ class Command(BaseCommand, UsersCreator, QuestionsCreator, AnswersCreator, TagCr
     def handle(self, *args: Any, **options: Any) -> str | None:
         ratio = options["ratio"]
 
-        if ratio > 5:
-            raise CommandError("RATIO very large.")
+        if ratio % self.users_list_limit != 0:
+            self.__execute_iteration(ratio % self.users_list_limit)
+            ratio -= ratio % self.users_list_limit
 
-        self.append_users(ratio)
-        users = list(User.objects.all().order_by("-id")[0:ratio])
-        
-        self.append_questions(users, 10)
-        questions = list(Question.objects.all().order_by("-id")[0:ratio*10])
+        for i in range(self.users_list_limit, ratio+self.users_list_limit, self.users_list_limit):
+            self.__execute_iteration(self.users_list_limit)
 
-        self.append_answers(questions, users)
-        answers = list(Answer.objects.all().order_by("-id")[0:ratio**2 + ratio*10])
+    def __execute_iteration(self, users_count: int):
+        users, user_profiles = self.append_users(users_count)
+        questions = self.create_questions(users, 10)
+        answers = self.create_answers(questions, users)
+        tag_contents = self.create_tag_contents(users_count)
+        tags = self.create_tags_to_questions(questions, tag_contents)
+        question_likes = self.create_question_likes_to(questions, users)
+        answer_likes = self.create_answer_likes_to(answers, users)
 
-        self.append_tag_contents(ratio)
-        tag_contents = list(TagContent.objects.all().order_by("-id")[0:ratio])
-
-        self.append_tags_to_questions(questions, tag_contents)
-
-        self.append_likes_to(questions, users)
-        self.append_likes_to(answers, users)
+        User.objects.bulk_create(users)
+        UserProfile.objects.bulk_create(user_profiles)
+        Question.objects.bulk_create(questions)
+        Answer.objects.bulk_create(answers)
+        TagContent.objects.bulk_create(tag_contents)
+        Tag.objects.bulk_create(tags)
+        QuestionLike.objects.bulk_create(question_likes)
+        AnswerLike.objects.bulk_create(answer_likes)
