@@ -5,11 +5,6 @@ from questions.models import Question, Tag
 from application import config
 from questions import pagination
 
-"""
-САЙТУ ТРЫНДЕТЬ ПРИ 1000 ВОПРОСОВ!!!!!!!!!!!!
-ОПТИМИЗИРОВАТЬ САЙТ, А ИМЕННО БАЗУ ДАННЫХ
-"""
-
 
 class NewQuestionsView(TemplateView):
     template_name: str = "questions/index.html"
