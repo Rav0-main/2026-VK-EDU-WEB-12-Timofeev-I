@@ -3,30 +3,27 @@ from django.core import exceptions
 from dataclasses import dataclass
 from datetime import datetime
 
-from questions.models.question_like import QuestionLike
-from questions.models.answer_like import AnswerLike
-
 class QuestionManager(models.Manager):
     def get_questions_with_tag(
             self, tag_name: str, page_number: int, questions_per_page: int
         ) -> 'list[QuestionDisplay]':
         return [
-            self.__form_question(q) \
-            for q in self.filter(tags__content__name=tag_name)
+            self.__form_question_view(q) \
+            for q in self.__form_question_query_set(self.filter(tags__content__name=tag_name))
         ]#[(page_number-1) * questions_per_page: page_number * questions_per_page]
 
     def get_new_questions(
             self, page_number: int, questions_per_page: int
         ) -> 'list[QuestionDisplay]':
         return [
-            self.__form_question(q) \
-            for q in self.all().order_by("-published_datetime").prefetch_related("tags")
+            self.__form_question_view(q) \
+            for q in self.__form_question_query_set(self.order_by("-published_datetime"))
         ]#[(page_number-1) * questions_per_page: page_number * questions_per_page]
     
     def get_question_by_id(self, question_id: int) -> 'QuestionDisplay | None':
         try:
-            q = self.get(id=question_id)
-            return self.__form_question(q)
+            q = self.__form_question_query_set(self.all()).get(id=question_id)
+            return self.__form_question_view(q)
         
         except exceptions.ObjectDoesNotExist:
             return None
@@ -39,40 +36,29 @@ class QuestionManager(models.Manager):
                 AnswerDisplay(
                     id=answer.id,
                     content=answer.content,
-                    vote_count=answer.likes.filter(type=AnswerLike.Types.positive).count() - \
-                        answer.likes.filter(type=AnswerLike.Types.negative).count(),
+                    vote_count=answer.vote_count,
                     published_datetime=answer.published_datetime,
                     is_correct=answer.is_correct
                 )
-                for answer in self.get(id=question_id).answers.prefetch_related("likes")
+                for answer in self.get(id=question_id).answers \
+                              .all().annotate(vote_count=models.Sum("likes__type")) \
+                              .order_by("-is_correct", "-vote_count", "-published_datetime")
             ]
 
         except exceptions.ObjectDoesNotExist:
             return []
-
-        answers_list.sort(key=lambda answer: (
-            answer.is_correct, answer.vote_count, answer.published_datetime
-        ), reverse=True)
 
         return answers_list#[(page_number-1) * answers_per_page: page_number * answers_per_page]
         
     def get_hot_questions(
             self, page_number: int, questions_per_page: int
         ) -> 'list[QuestionDisplay]':
-        #вкусняшка
-        questions_list = [
-            self.__form_question(q) \
-            for q in self.all().prefetch_related("likes", "answers", "tags")
+        return [
+            self.__form_question_view(q) \
+            for q in self.__form_question_query_set(self.all()).order_by("-vote_count")
         ]
-
-        questions_list.sort(key=lambda q: q.vote_count, reverse=True)
-
-        return questions_list#[
-            #(page_number - 1) * questions_per_page:
-            #page_number * questions_per_page
-        #]
     
-    def __form_question(self, question) -> 'QuestionDisplay':
+    def __form_question_view(self, question) -> 'QuestionDisplay':
         return QuestionDisplay(
             id=question.id,
             title=question.title,
@@ -82,9 +68,12 @@ class QuestionManager(models.Manager):
             ],
             published_datetime=question.published_datetime,
             answer_count=question.answers.count(),
-            vote_count=question.likes.filter(type=QuestionLike.Types.positive).count() - \
-                question.likes.filter(type=QuestionLike.Types.negative).count()
+            vote_count=question.vote_count,
         )
+    
+    def __form_question_query_set(self, query_set):
+        return query_set.prefetch_related("answers", "likes", "tags", "tags__content") \
+                        .annotate(vote_count=models.Sum("likes__type"))
 
 
 @dataclass(frozen=True)

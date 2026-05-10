@@ -9,10 +9,10 @@ class QuestionLike(models.Model):
     author = models.ForeignKey("auth.User", on_delete=models.CASCADE, verbose_name=_("Автор"))
 
     class Types:
-        positive: LikeType = "+"
+        positive: LikeType = 1
         positive_verbose = _("Положительный")
 
-        negative: LikeType = "-"
+        negative: LikeType = -1
         negative_verbose = _("Отрицательный")
 
         types = [
@@ -20,7 +20,7 @@ class QuestionLike(models.Model):
             (negative, negative_verbose)
         ]
 
-    type = models.CharField(max_length=32, choices=Types.types, verbose_name="Тип лайка")
+    type = models.SmallIntegerField(choices=Types.types, verbose_name="Тип лайка")
 
     class Meta:
         unique_together = [

@@ -211,7 +211,7 @@ class LikeCreator:
         return likes
         
     def __rand_like_type(self) -> LikeType:
-        return "+" if randint(0, 1) == 1 else "-"
+        return 1 if randint(0, 1) == 1 else -1
 
 class Command(BaseCommand, UsersCreator, QuestionsCreator, AnswersCreator, TagCreator, LikeCreator):
     help = r"""
