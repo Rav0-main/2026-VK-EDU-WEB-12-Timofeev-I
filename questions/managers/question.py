@@ -3,6 +3,11 @@ from django.core import exceptions
 from dataclasses import dataclass
 from datetime import datetime
 
+"""
+ИЗ-ЗА СОЗДАНИЯ МАССИВА ПИТОН ЖРЁТ ВРЕМЯ КАК СОБАКА.
+ПОПРОБОВАТЬ ПЕРЕКИНУТЬ НЕ МАССИВ, А КВЕРИ-СЕТ В ШАБЛОН.
+"""
+
 class QuestionManager(models.Manager):
     def get_questions_with_tag(
             self, tag_name: str, page_number: int, questions_per_page: int
