@@ -16,9 +16,7 @@ class NewQuestionsView(TemplateView):
 
         page_number = pagination.get_page_number_from(self.request)
         
-        new_questions = Question.objects.get_new_questions(
-            page_number, config.QUESTIONS_PER_PAGE
-        )
+        new_questions = Question.objects.get_new_questions()
         
         page = pagination.get_page_of(new_questions, page_number)
     
@@ -39,13 +37,9 @@ class HotQuestionsView(TemplateView):
 
         page_number: int = pagination.get_page_number_from(self.request)
 
-        hot_questions = Question.objects.get_hot_questions(
-            page_number, config.QUESTIONS_PER_PAGE
-        )
+        hot_questions = Question.objects.get_hot_questions()
 
-        page = pagination.get_page_of(
-            hot_questions, page_number
-        )
+        page = pagination.get_page_of(hot_questions, page_number)
 
         context["questions"] = page.object_list
         context["page"] = page
@@ -67,12 +61,12 @@ class QuestionView(TemplateView):
     
         page_number = pagination.get_page_number_from(self.request)
 
-        page = pagination.get_page_of(
-            Question.objects.get_answers(
-                question_id, page_number, config.ANSWERS_PER_PAGE
-            ),
-            page_number
-        )
+        answers = Question.objects.get_answers(question_id)
+
+        if answers:
+            page = pagination.get_page_of(answers, page_number)
+        else:
+            answers = []
 
         context["question"] = question
         context["answers"] = page.object_list
@@ -93,9 +87,7 @@ class QuestionsByTagView(TemplateView):
 
         page_number = pagination.get_page_number_from(self.request)
 
-        questions_with_tag = Question.objects.get_questions_with_tag(
-            tag_name, page_number, config.QUESTIONS_PER_PAGE
-        )
+        questions_with_tag = Question.objects.get_questions_with_tag(tag_name)
 
         page = pagination.get_page_of(questions_with_tag, page_number)
 
