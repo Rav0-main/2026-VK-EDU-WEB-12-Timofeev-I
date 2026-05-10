@@ -5,6 +5,8 @@ from questions.models import Question, Tag
 from application import config
 from questions import pagination
 
+from core.managers import get_best_members
+
 
 class NewQuestionsView(TemplateView):
     template_name: str = "questions/index.html"
@@ -24,6 +26,7 @@ class NewQuestionsView(TemplateView):
         context["page"] = page
         context["logined"] = False
         context["popular_tags"] = Tag.objects.get_popular_tags(config.POPULAR_TAGS_COUNT)
+        context["best_members"] = get_best_members()
 
         return context
     
@@ -48,6 +51,7 @@ class HotQuestionsView(TemplateView):
         context["page"] = page
         context["logined"] = False
         context["popular_tags"] = Tag.objects.get_popular_tags(config.POPULAR_TAGS_COUNT)
+        context["best_members"] = get_best_members()
 
         return context
     
@@ -75,6 +79,7 @@ class QuestionView(TemplateView):
         context["page"] = page
         context["logined"] = False
         context["popular_tags"] = Tag.objects.get_popular_tags(config.POPULAR_TAGS_COUNT)
+        context["best_members"] = get_best_members()
 
         return context
     
@@ -99,6 +104,7 @@ class QuestionsByTagView(TemplateView):
         context["tag"] = tag_name
         context["logined"] = False
         context["popular_tags"] = Tag.objects.get_popular_tags(config.POPULAR_TAGS_COUNT)
+        context["best_members"] = get_best_members()
 
         return context
     
@@ -111,5 +117,6 @@ class AskView(TemplateView):
 
         context["logined"] = True
         context["popular_tags"] = Tag.objects.get_popular_tags(config.POPULAR_TAGS_COUNT)
+        context["best_members"] = get_best_members()
 
         return context

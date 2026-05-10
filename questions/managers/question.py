@@ -78,7 +78,9 @@ class QuestionManager(models.Manager):
     
     def __form_question_query_set(self, query_set):
         return query_set.prefetch_related("answers", "likes", "tags", "tags__content") \
-                        .annotate(vote_count=models.Sum("likes__type"))
+                        .annotate(vote_count=models.Sum("likes__type"),
+                                  answers_count=models.Count("answers", distinct=True)
+                                )
 
 
 @dataclass(frozen=True)

@@ -7,7 +7,8 @@ class Answer(models.Model):
         "Question", on_delete=models.CASCADE, verbose_name=_("Вопрос"),
         related_name="answers"
     )
-    author = models.ForeignKey("auth.User", on_delete=models.CASCADE, verbose_name=_("Автор"))
+    author = models.ForeignKey("auth.User", on_delete=models.CASCADE, verbose_name=_("Автор"), 
+                               related_name="answers")
 
     content = models.TextField(max_length=4000, verbose_name=_("Текст"))
     is_correct = models.BooleanField(verbose_name=_("Это правильный ответ?"), default=False)

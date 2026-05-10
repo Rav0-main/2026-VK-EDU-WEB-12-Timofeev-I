@@ -1,0 +1,16 @@
+<div class="best-members">
+  <div class="text-center mb-3">
+    <h2 class="section-title" style="border-bottom-color: #0d6efd;">Best members</h2>
+  </div>
+  <div>
+    {% for best_member in best_members %}
+    <div class="member">
+      <a class="link-primary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="#">
+        <h5 class="mb-1">
+          {{ best_member.username }}
+        </h5>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>

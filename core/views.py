@@ -4,6 +4,8 @@ from django.views.generic.base import TemplateView
 from application import config
 from questions import models
 
+from core.managers import get_best_members
+
 class LoginView(TemplateView):
     template_name: str = "core/login.html"
 
@@ -14,6 +16,7 @@ class LoginView(TemplateView):
         context["popular_tags"] = models.Tag.objects.get_popular_tags(
             config.POPULAR_TAGS_COUNT
         )
+        context["best_members"] = get_best_members()
 
         return context
 
@@ -28,6 +31,7 @@ class RegisterView(TemplateView):
         context["popular_tags"] = models.Tag.objects.get_popular_tags(
             config.POPULAR_TAGS_COUNT
         )
+        context["best_members"] = get_best_members()
 
         return context
 
@@ -42,5 +46,6 @@ class ProfileView(TemplateView):
         context["popular_tags"] = models.Tag.objects.get_popular_tags(
             config.POPULAR_TAGS_COUNT
         )
+        context["best_members"] = get_best_members()
 
         return context
