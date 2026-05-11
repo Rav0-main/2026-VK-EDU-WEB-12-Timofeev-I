@@ -8,12 +8,6 @@ from questions import pagination
 from core.managers import get_best_members
 
 
-"""
-Настроить PostgreSQL.
-Удалить из UserProfile::nickname.
-"""
-
-
 class NewQuestionsView(TemplateView):
     template_name: str = "questions/index.html"
 

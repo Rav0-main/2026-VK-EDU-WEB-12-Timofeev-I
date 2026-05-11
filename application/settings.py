@@ -19,7 +19,7 @@ ENV_FILENAME = ".env"
 
 env = environ.Env(
     DEBUG=(bool, True),
-    SECRET_KEY=(str, "NULL")
+    DATABASE_PORT=(int, 5432)
 )
 
 environ.Env.read_env(BASE_DIR / ENV_FILENAME)
@@ -73,7 +73,7 @@ if DEBUG:
     ]
 
     DEBUG_TOOLBAR_CONFIG = {
-        'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG,  # То же самое
+        'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG,
         'INTERCEPT_REDIRECTS': False,
         'INSERT_BEFORE': '</body>',
     }
@@ -121,20 +121,24 @@ WSGI_APPLICATION = 'application.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
+DATABASES = {}
+
+if DEBUG:
+    DATABASES["default"] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+
+else:
+    DATABASES["default"] = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": env("DATABASE_NAME"),
         "USER": env("DATABASE_USER"),
         "PASSWORD": env("DATABASE_PASSWORD"),
         "HOST": env("DATABASE_HOST"),
         "PORT": env("DATABASE_PORT"),
-    },
-    'sqlite3': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
     }
-}
+
 
 
 # Password validation

@@ -6,6 +6,7 @@ from questions import models
 
 from core.managers import get_best_members
 
+
 class LoginView(TemplateView):
     template_name: str = "core/login.html"
 
