@@ -10,15 +10,15 @@ from questions.models import Question, Answer, Tag, TagContent, AnswerLike, Ques
 from questions.models._like_type import LikeType
 
 
-USERS_LIST_LIMIT: int = 10
+USERS_LIST_LIMIT: int = 10 #can only <= 10 :(.
 
 
 class UsersCreator:
-    users_list_limit: int = USERS_LIST_LIMIT
+    list_limit: int = USERS_LIST_LIMIT
 
-    def append_users(self, count: int) -> tuple[list[User], list[UserProfile]]:
-        if count > self.users_list_limit or count < 0:
-            raise ValueError(f"Users count must be >= 0 and <= {self.users_list_limit}.")
+    def create(self, count: int) -> tuple[list[User], list[UserProfile]]:
+        if count > self.list_limit or count < 0:
+            raise ValueError(f"Users count must be >= 0 and <= {self.list_limit}.")
         
         elif count == 0:
             return ([], [])
@@ -59,15 +59,15 @@ class UsersCreator:
     
 
 class QuestionsCreator:
-    questions_list_limit: int = 10 * USERS_LIST_LIMIT
+    list_limit: int = 10 * USERS_LIST_LIMIT
 
-    def create_questions(self, users: list[User], questions_per_user: int) -> list[Question]:
+    def create(self, users: list[User], questions_per_user: int) -> list[Question]:
         if len(users) == 0:
             return []
         
-        elif len(users) * questions_per_user > self.questions_list_limit or \
+        elif len(users) * questions_per_user > self.list_limit or \
             questions_per_user < 0:
-            raise ValueError(f"Questions count must be >= 0 and <= {self.questions_list_limit}")
+            raise ValueError(f"Questions count must be >= 0 and <= {self.list_limit}")
         
         elif questions_per_user == 0:
             return []
@@ -92,14 +92,14 @@ class QuestionsCreator:
     
 
 class AnswersCreator:
-    answers_list_limit: int = 100 * USERS_LIST_LIMIT
+    list_limit: int = 100 * USERS_LIST_LIMIT
 
-    def create_answers(self, questions: list[Question], answer_authors: list[User]) -> list[Answer]:
+    def create(self, questions: list[Question], answer_authors: list[User]) -> list[Answer]:
         if len(questions) * len(answer_authors) == 0:
             return []
 
-        elif len(answer_authors) * len(questions) > self.answers_list_limit:
-            raise ValueError(f"Answers count must be >= 0 and <= {self.answers_list_limit}.")
+        elif len(answer_authors) * len(questions) > self.list_limit:
+            raise ValueError(f"Answers count must be >= 0 and <= {self.list_limit}.")
         
         answers = []
         for question in questions:
@@ -162,15 +162,18 @@ class TagCreator:
         tags = []
         for question in questions:
             tags.extend(
-                Tag(question=question, content=tag_contents[i])
-                for i in range(randint(1, len(tag_contents)))
+                Tag(
+                    question=question,
+                    content=tag_contents[i]
+                )
+                for i in range(randint(1, min(len(tag_contents), 7)))
             )
             
         return tags
     
 
 class LikeCreator:
-    likes_list_limit: int = 200 * USERS_LIST_LIMIT
+    list_limit: int = 200 * USERS_LIST_LIMIT
 
     def create_question_likes_to(
             self, questions: list[Question], users: list[User]
@@ -215,7 +218,13 @@ class LikeCreator:
         return 1 if randint(0, 1) == 1 else -1
 
 
-class Command(BaseCommand, UsersCreator, QuestionsCreator, AnswersCreator, TagCreator, LikeCreator):
+class Command(BaseCommand):
+    users_creator = UsersCreator()
+    questions_creator = QuestionsCreator()
+    answers_creator = AnswersCreator()
+    tags_creator = TagCreator()
+    likes_creator = LikeCreator()
+    
     help = r"""
         Append in database:
         1) Users count = RATIO
@@ -233,21 +242,23 @@ class Command(BaseCommand, UsersCreator, QuestionsCreator, AnswersCreator, TagCr
     def handle(self, *args: Any, **options: Any) -> str | None:
         ratio = options["ratio"]
 
-        if ratio % self.users_list_limit != 0:
-            self.__execute_iteration(ratio % self.users_list_limit)
-            ratio -= ratio % self.users_list_limit
+        if ratio % self.users_creator.list_limit != 0:
+            self.__create_group(ratio % self.users_creator.list_limit)
+            ratio -= ratio % self.users_creator.list_limit
 
-        for i in range(self.users_list_limit, ratio+self.users_list_limit, self.users_list_limit):
-            self.__execute_iteration(self.users_list_limit)
+        for i in range(self.users_creator.list_limit,
+                       ratio+self.users_creator.list_limit,
+                       self.users_creator.list_limit):
+            self.__create_group(self.users_creator.list_limit)
 
-    def __execute_iteration(self, users_count: int):
-        users, user_profiles = self.append_users(users_count)
-        questions = self.create_questions(users, 10)
-        answers = self.create_answers(questions, users)
-        tag_contents = self.create_tag_contents(users_count)
-        tags = self.create_tags_to_questions(questions, tag_contents)
-        question_likes = self.create_question_likes_to(questions, users)
-        answer_likes = self.create_answer_likes_to(answers, users)
+    def __create_group(self, users_count: int):
+        users, user_profiles = self.users_creator.create(users_count)
+        questions = self.questions_creator.create(users, 10)
+        answers = self.answers_creator.create(questions, users)
+        tag_contents = self.tags_creator.create_tag_contents(users_count)
+        tags = self.tags_creator.create_tags_to_questions(questions, tag_contents)
+        question_likes = self.likes_creator.create_question_likes_to(questions, users)
+        answer_likes = self.likes_creator.create_answer_likes_to(answers, users)
 
         User.objects.bulk_create(users)
         UserProfile.objects.bulk_create(user_profiles)
