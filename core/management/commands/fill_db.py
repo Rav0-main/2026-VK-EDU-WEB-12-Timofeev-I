@@ -9,7 +9,9 @@ from core.models import UserProfile
 from questions.models import Question, Answer, Tag, TagContent, AnswerLike, QuestionLike
 from questions.models._like_type import LikeType
 
-USERS_LIST_LIMIT: int = 50
+
+USERS_LIST_LIMIT: int = 10
+
 
 class UsersCreator:
     users_list_limit: int = USERS_LIST_LIMIT
@@ -51,7 +53,6 @@ class UsersCreator:
 
         user_profile = UserProfile()
         user_profile.user = user
-        user_profile.nickname = f"nickname_{user_id}"
         user_profile.avatar_path = f"path/to/avatar_{user_id}"
 
         return (user, user_profile)
@@ -212,6 +213,7 @@ class LikeCreator:
         
     def __rand_like_type(self) -> LikeType:
         return 1 if randint(0, 1) == 1 else -1
+
 
 class Command(BaseCommand, UsersCreator, QuestionsCreator, AnswersCreator, TagCreator, LikeCreator):
     help = r"""
