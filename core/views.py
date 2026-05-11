@@ -49,3 +49,18 @@ class ProfileView(TemplateView):
         context["best_members"] = get_best_members()
 
         return context
+    
+
+class Http404View(TemplateView):
+    template_name = "404.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        context["logined"] = False
+        context["popular_tags"] = models.Tag.objects.get_popular_tags(
+            config.POPULAR_TAGS_COUNT
+        )
+        context["best_members"] = get_best_members()
+
+        return context

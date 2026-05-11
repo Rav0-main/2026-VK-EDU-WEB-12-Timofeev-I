@@ -15,11 +15,14 @@ import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+ENV_FILENAME = ".env"
 
 env = environ.Env(
     DEBUG=(bool, True),
     SECRET_KEY=(str, "NULL")
 )
+
+environ.Env.read_env(BASE_DIR / ENV_FILENAME)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -31,6 +34,9 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = []
+
+if not DEBUG:
+    ALLOWED_HOSTS.append("127.0.0.1")
 
 # Application definition
 

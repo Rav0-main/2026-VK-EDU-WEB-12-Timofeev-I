@@ -35,7 +35,11 @@
     <button class="btn btn-outline-success btn-sm vote-btn">
       <strong>+</strong>
     </button>
+    {% if question.vote_count %}
     <span class="vote-count">{{ question.vote_count }}</span>
+    {% else %}
+    <span class="vote-count">0</span>
+    {% endif %}
     <button class="btn btn-outline-danger btn-sm vote-btn">
       <strong>-</strong>
     </button>

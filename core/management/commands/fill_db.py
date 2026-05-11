@@ -9,7 +9,7 @@ from core.models import UserProfile
 from questions.models import Question, Answer, Tag, TagContent, AnswerLike, QuestionLike
 from questions.models._like_type import LikeType
 
-USERS_LIST_LIMIT: int = 10
+USERS_LIST_LIMIT: int = 50
 
 class UsersCreator:
     users_list_limit: int = USERS_LIST_LIMIT

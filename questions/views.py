@@ -8,6 +8,12 @@ from questions import pagination
 from core.managers import get_best_members
 
 
+"""
+Настроить PostgreSQL.
+Удалить из UserProfile::nickname.
+"""
+
+
 class NewQuestionsView(TemplateView):
     template_name: str = "questions/index.html"
 
@@ -63,10 +69,7 @@ class QuestionView(TemplateView):
 
         answers = Question.objects.get_answers(question_id)
 
-        if answers:
-            page = pagination.get_page_of(answers, page_number)
-        else:
-            answers = []
+        page = pagination.get_page_of(answers, page_number)
 
         context["question"] = question
         context["answers"] = page.object_list
