@@ -16,7 +16,7 @@ class UserAdmin(BaseUserAdmin):
 
         verbose_name_plural = _("Профили пользователей")
         fields = [
-            "avatar_path"
+            "avatar"
         ]
 
     inlines = [UserProfileInline]
