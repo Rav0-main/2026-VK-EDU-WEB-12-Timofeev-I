@@ -70,3 +70,9 @@ python manage.py runserver
 ```
 python manage.py fill_db --ratio 100
 ```
+
+3) **Создать** супер-пользователя:
+
+```
+python manage.py createsuperuser
+```
