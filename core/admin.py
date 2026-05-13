@@ -16,7 +16,7 @@ class UserAdmin(BaseUserAdmin):
 
         verbose_name_plural = _("Профили пользователей")
         fields = [
-            "avatar"
+            "avatar", "nickname"
         ]
 
     inlines = [UserProfileInline]
@@ -25,9 +25,9 @@ class UserAdmin(BaseUserAdmin):
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = [
-        "user"
+        "user", "nickname"
     ]
     
     search_fields = [
-        "user__username"
+        "user__username", "nickname"
     ]

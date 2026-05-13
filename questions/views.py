@@ -1,14 +1,13 @@
 from typing import Any
 from django.views.generic.base import TemplateView
 
-from questions.models import Question, Tag
-from application import config
+from questions.models import Question
 from questions import pagination
 
-from core.managers import get_best_members
+from core.mixins import CommonViewContextMixin
 
 
-class NewQuestionsView(TemplateView):
+class NewQuestionsView(CommonViewContextMixin, TemplateView):
     template_name: str = "questions/index.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
@@ -22,14 +21,12 @@ class NewQuestionsView(TemplateView):
     
         context["questions"] = page.object_list
         context["page"] = page
-        context["logined"] = False
-        context["popular_tags"] = Tag.objects.get_popular_tags(config.POPULAR_TAGS_COUNT)
-        context["best_members"] = get_best_members()
+        context |= self.get_common_context_data(self.request)
 
         return context
     
 
-class HotQuestionsView(TemplateView):
+class HotQuestionsView(CommonViewContextMixin, TemplateView):
     template_name: str = "questions/hot.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
@@ -43,14 +40,12 @@ class HotQuestionsView(TemplateView):
 
         context["questions"] = page.object_list
         context["page"] = page
-        context["logined"] = False
-        context["popular_tags"] = Tag.objects.get_popular_tags(config.POPULAR_TAGS_COUNT)
-        context["best_members"] = get_best_members()
+        context |= self.get_common_context_data(self.request)
 
         return context
     
 
-class QuestionView(TemplateView):
+class QuestionView(CommonViewContextMixin, TemplateView):
     template_name: str = "questions/answers.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
@@ -66,16 +61,14 @@ class QuestionView(TemplateView):
         page = pagination.get_page_of(answers, page_number)
 
         context["question"] = question
-        context["answers"] = page.object_list
         context["page"] = page
-        context["logined"] = False
-        context["popular_tags"] = Tag.objects.get_popular_tags(config.POPULAR_TAGS_COUNT)
-        context["best_members"] = get_best_members()
+        context["answers"] = page.object_list
+        context |= self.get_common_context_data(self.request)
 
         return context
     
     
-class QuestionsByTagView(TemplateView):
+class QuestionsByTagView(CommonViewContextMixin, TemplateView):
     template_name: str = "questions/tag.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
@@ -91,21 +84,17 @@ class QuestionsByTagView(TemplateView):
         context["questions"] = page.object_list
         context["page"] = page
         context["tag"] = tag_name
-        context["logined"] = False
-        context["popular_tags"] = Tag.objects.get_popular_tags(config.POPULAR_TAGS_COUNT)
-        context["best_members"] = get_best_members()
+        context |= self.get_common_context_data(self.request)
 
         return context
     
 
-class AskView(TemplateView):
+class AskView(CommonViewContextMixin, TemplateView):
     template_name: str = "questions/ask.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
-        context["logined"] = True
-        context["popular_tags"] = Tag.objects.get_popular_tags(config.POPULAR_TAGS_COUNT)
-        context["best_members"] = get_best_members()
+        context |= self.get_common_context_data(self.request)
 
         return context

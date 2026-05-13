@@ -3,8 +3,9 @@ from django.utils.translation import gettext as _
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField("auth.User", on_delete=models.CASCADE, verbose_name=_("Пользователь"))
+    user = models.OneToOneField("auth.User", on_delete=models.CASCADE, verbose_name=_("Пользователь"), related_name="profile")
 
+    nickname = models.CharField(verbose_name=_("Отображаемое имя"), max_length=64)
     avatar = models.ImageField(upload_to="avatars/", verbose_name=_("Аватарка"), null=True, blank=True)
 
     class Meta:

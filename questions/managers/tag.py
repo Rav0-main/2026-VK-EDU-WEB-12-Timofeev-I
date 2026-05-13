@@ -1,5 +1,6 @@
 from django.db import models
 from dataclasses import dataclass
+from application import config
 
 
 POPULAR_TAGS_COLORS = [
@@ -16,12 +17,12 @@ POPULAR_TAGS_FONT_SIZES = [
 
 
 class TagManager(models.Manager):
-    def get_popular_tags(self, count: int) -> 'list[PopularTagDisplay]':
+    def get_popular_tags(self) -> 'list[PopularTagDisplay]':
         return self.__form_popular_tags_from(
             [
                 name for name in self.values("content__name") \
                 .annotate(cnt=models.Count("content__name")) \
-                .order_by("-cnt")[:count]
+                .order_by("-cnt")[:config.POPULAR_TAGS_COUNT]
                 .values_list("content__name", flat=True)
             ]
         )
