@@ -12,24 +12,35 @@
   </h2>
 </div>
 
+{% for err_msg in form.non_field_errors  %}
+<div>
+  <h3 class="mb-3 text-danger">
+    {{ err_msg }}
+  </h3>
+</div>
+{% endfor %}
+
+<form method="POST" action="{% url "questions:ask" %}">
+{% csrf_token %}
+
 <div class="mb-3" style="padding-right: 1.5rem;">
   <div class="input-group input-group-lg">
     <span class="input-group-text prompt-primary">Title: </span>
-    <textarea class="form-control" placeholder="Type title..." required></textarea>
+    <textarea class="form-control" placeholder="Type title..." required name="title">{{ form.data.title }}</textarea>
   </div>
 </div>
 
 <div class="mb-3" style="padding-right: 1.5rem;">
   <div class="input-group input-group-lg">
     <span class="input-group-text prompt-primary">Question: </span>
-    <textarea class="form-control" placeholder="Type question..." style="height: 12rem;" required></textarea>
+    <textarea class="form-control" placeholder="Type question..." style="height: 12rem;" required name="content">{{ form.data.content }}</textarea>
   </div>
 </div>
 
 <div class="mb-4" style="padding-right: 1.5rem;">
   <div class="input-group input-group-lg">
     <span class="input-group-text prompt-primary">Tags: </span>
-    <textarea class="form-control" placeholder="Type tag(s)..."></textarea>
+    <textarea class="form-control" placeholder="Type tag(s)..." name="tags">{{ form.data.tags }}</textarea>
   </div>
 </div>
 
@@ -38,5 +49,6 @@
     Ask
   </button>
 </div>
+</form>
 
 {% endblock %}

@@ -32,7 +32,7 @@
     </div>
   </div>
   <div class="vote-controls">
-    <button class="btn btn-outline-success btn-sm vote-btn">
+    <button class="btn btn-outline-success btn-sm vote-btn" {% if not logined %}disabled{% endif %}>
       <strong>+</strong>
     </button>
     {% if question.vote_count %}
@@ -40,7 +40,7 @@
     {% else %}
     <span class="vote-count">0</span>
     {% endif %}
-    <button class="btn btn-outline-danger btn-sm vote-btn">
+    <button class="btn btn-outline-danger btn-sm vote-btn" {% if not logined %}disabled{% endif %}>
       <strong>-</strong>
     </button>
   </div>

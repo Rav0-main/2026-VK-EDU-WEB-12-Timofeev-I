@@ -1,6 +1,11 @@
 from typing import Any
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, View
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django import http
+from django.shortcuts import render
+from django.urls import reverse, reverse_lazy
 
+from questions import forms
 from questions.models import Question
 from questions import pagination
 
@@ -44,12 +49,28 @@ class HotQuestionsView(CommonViewContextMixin, TemplateView):
 
         return context
     
+class AddAnswerView(LoginRequiredMixin, CommonViewContextMixin, View):
+    login_url = reverse_lazy("core:login")
+
+    template_name: str = "questions/answers.html"
+    http_method_names = ["post"]
+
+    def post(self, request: http.HttpRequest, question_id: int):
+        context = self.get_common_context_data(request)
+        form = forms.AddAnswerForm(request, question_id, request.POST)
+        context["form"] = form
+
+        if form.is_valid():
+            form.save()
+            return http.HttpResponseRedirect(reverse("questions:question", kwargs={"question_id": question_id}))
+
+        return render(request, self.template_name, context=context)
 
 class QuestionView(CommonViewContextMixin, TemplateView):
     template_name: str = "questions/answers.html"
 
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = self.get_common_context_data(self.request)
         question_id = kwargs["question_id"]
 
         question = Question.objects.get_question_by_id(question_id)
@@ -63,7 +84,7 @@ class QuestionView(CommonViewContextMixin, TemplateView):
         context["question"] = question
         context["page"] = page
         context["answers"] = page.object_list
-        context |= self.get_common_context_data(self.request)
+        context["form"] = forms.AddAnswerForm(self.request, question_id)
 
         return context
     
@@ -89,12 +110,25 @@ class QuestionsByTagView(CommonViewContextMixin, TemplateView):
         return context
     
 
-class AskView(CommonViewContextMixin, TemplateView):
+class AskView(LoginRequiredMixin, CommonViewContextMixin, View):
+    login_url = reverse_lazy("core:login")
+
     template_name: str = "questions/ask.html"
+    http_method_names = ["post", "get"]
 
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
+    def get(self, request: http.HttpRequest):
+        context = self.get_common_context_data(request)
+        context["form"] = forms.AskForm(request)
 
-        context |= self.get_common_context_data(self.request)
+        return render(request, self.template_name, context=context)
+    
+    def post(self, request: http.HttpRequest):
+        context = self.get_common_context_data(request)
+        form = forms.AskForm(request, request.POST)
+        context["form"] = form
 
-        return context
+        if form.is_valid():
+            question = form.save()
+            return http.HttpResponseRedirect(reverse("questions:question", args=[question.pk]))
+        
+        return render(request, self.template_name, context=context)

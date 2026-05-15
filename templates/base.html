@@ -42,6 +42,7 @@
           </button>
         </div>
 
+        {% if logined %}
         <div class="d-flex ms-3">
           <a href="{% url 'questions:ask' %}">
             <button class="btn btn-info btn-md px-4">
@@ -49,6 +50,7 @@
             </button>
           </a>
         </div>
+        {% endif %}
       </div>
 
       {% if logined %}

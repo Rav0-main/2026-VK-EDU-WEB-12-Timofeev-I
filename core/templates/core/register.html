@@ -28,7 +28,7 @@
     <div class="input-group" style="height: 3.3rem">
       <span class="input-group-text prompt-primary">Login: </span>
       <input type="text" class="form-control" name="username"
-      placeholder="Type login..." required>
+      placeholder="Type login..." required value="{{ form.cleaned_data.username }}">
     </div>
   </div>
 
@@ -36,7 +36,7 @@
     <div class="input-group" style="height: 3.3rem">
       <span class="input-group-text prompt-primary">Email: </span>
       <input type="email" class="form-control" name="email"
-      placeholder="Type email..." required>
+      placeholder="Type email..." required value="{{ form.cleaned_data.email }}">
     </div>
   </div>
 
@@ -44,7 +44,7 @@
     <div class="input-group" style="height: 3.3rem">
       <span class="input-group-text prompt-primary">NickName: </span>
       <input type="text" class="form-control" name="nickname"
-      placeholder="Type nickname..." required>
+      placeholder="Type nickname..." required value="{{ form.cleaned_data.nickname }}">
     </div>
   </div>
 

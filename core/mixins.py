@@ -1,3 +1,4 @@
+from typing import Any
 from django import http
 from questions.models.tag import Tag
 from core.models import UserProfile
@@ -19,3 +20,18 @@ class CommonViewContextMixin:
                 context["user_nickname"] = request.user.username
 
         return context
+    
+class UserFieldsPrepareMixin:
+    def prepare_user_data(self, user_data: dict[str, Any]):
+        user_data["username"] = self.get_username(user_data.get("username"))
+        user_data["email"] = self.get_email(user_data.get("email"))
+        user_data["nickname"] = self.get_nickname(user_data.get("nickname"))
+
+    def get_username(self, username: str | None) -> str | None:
+        return None if username is None else username.strip().lower()
+
+    def get_email(self, email: str | None) -> str | None:
+        return None if email is None else email.strip()
+    
+    def get_nickname(self, nickname: str | None) -> str | None:
+        return None if nickname is None else nickname.strip()

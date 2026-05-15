@@ -12,24 +12,34 @@
   </h2>
 </div>
 
+{% for err_msg in form.non_field_errors %}
+<div class="mb-3">
+  <h5 class="text-danger">
+    {{ err_msg }}
+  </h5>
+</div>
+{% endfor %}
+
+<form method="POST" action="{% url "core:settings" %}">
+{% csrf_token %}
 <div class="mb-4" style="padding-right: 1.5rem;">
   <div class="input-group">
     <span class="input-group-text prompt-primary">Login: </span>
-    <textarea class="form-control" placeholder="Type login...">{{ user.username }}</textarea>
+    <textarea class="form-control" placeholder="Type login..." name="username">{{ form.data.username }}</textarea>
   </div>
 </div>
 
 <div class="mb-4" style="padding-right: 1.5rem;">
   <div class="input-group">
     <span class="input-group-text prompt-primary">Email: </span>
-    <textarea class="form-control" placeholder="Type email">{{ user.email }}</textarea>
+    <textarea class="form-control" placeholder="Type email" name="email">{{ form.data.email }}</textarea>
   </div>
 </div>
 
 <div class="mb-4" style="padding-right: 1.5rem;">
   <div class="input-group">
     <span class="input-group-text prompt-primary">NickName: </span>
-    <textarea class="form-control" placeholder="Type nickname">{{ user.profile.nickname }}</textarea>
+    <textarea class="form-control" placeholder="Type nickname" name="nickname">{{ form.data.nickname }}</textarea>
   </div>
 </div>
 
@@ -51,4 +61,6 @@
 <div style="margin: 0.7rem 0; text-align: left;">
   <button class="btn btn-primary btn-lg" style="width: 7rem;">Save</button>
 </div>
+
+</form>
 {% endblock %}
