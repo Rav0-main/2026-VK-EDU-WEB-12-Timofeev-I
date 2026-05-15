@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models import Count
+
 from application import config
 from dataclasses import dataclass
 

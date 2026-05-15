@@ -26,7 +26,7 @@ class NewQuestionsView(CommonViewContextMixin, TemplateView):
     
         context["questions"] = page.object_list
         context["page"] = page
-        context |= self.get_common_context_data(self.request)
+        context |= self.get_common_context(self.request)
 
         return context
     
@@ -45,7 +45,7 @@ class HotQuestionsView(CommonViewContextMixin, TemplateView):
 
         context["questions"] = page.object_list
         context["page"] = page
-        context |= self.get_common_context_data(self.request)
+        context |= self.get_common_context(self.request)
 
         return context
     
@@ -56,7 +56,7 @@ class AddAnswerView(LoginRequiredMixin, CommonViewContextMixin, View):
     http_method_names = ["post"]
 
     def post(self, request: http.HttpRequest, question_id: int):
-        context = self.get_common_context_data(request)
+        context = self.get_common_context(request)
         form = forms.AddAnswerForm(request, question_id, request.POST)
         context["form"] = form
 
@@ -70,7 +70,7 @@ class QuestionView(CommonViewContextMixin, TemplateView):
     template_name: str = "questions/answers.html"
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
-        context = self.get_common_context_data(self.request)
+        context = self.get_common_context(self.request)
         question_id = kwargs["question_id"]
 
         question = Question.objects.get_question_by_id(question_id)
@@ -105,7 +105,7 @@ class QuestionsByTagView(CommonViewContextMixin, TemplateView):
         context["questions"] = page.object_list
         context["page"] = page
         context["tag"] = tag_name
-        context |= self.get_common_context_data(self.request)
+        context |= self.get_common_context(self.request)
 
         return context
     
@@ -117,13 +117,13 @@ class AskView(LoginRequiredMixin, CommonViewContextMixin, View):
     http_method_names = ["post", "get"]
 
     def get(self, request: http.HttpRequest):
-        context = self.get_common_context_data(request)
+        context = self.get_common_context(request)
         context["form"] = forms.AskForm(request)
 
         return render(request, self.template_name, context=context)
     
     def post(self, request: http.HttpRequest):
-        context = self.get_common_context_data(request)
+        context = self.get_common_context(request)
         form = forms.AskForm(request, request.POST)
         context["form"] = form
 

@@ -5,8 +5,10 @@ from questions.models.tag import TagContent, Tag
 from questions.models.answer import Answer
 from questions.models.question import Question
 
-class AddAnswerForm(forms.Form):
-    content = forms.CharField(max_length=4095, widget=forms.Textarea)
+class AddAnswerForm(forms.ModelForm):
+    class Meta:
+        model = Answer
+        fields = ["content"]
 
     def __init__(self, request: http.HttpRequest, question_id: int, *args, **kwargs):
         self.request = request
@@ -41,9 +43,11 @@ class AddAnswerForm(forms.Form):
             ).first()
         
 
-class AskForm(forms.Form):
-    title = forms.CharField(max_length=511, widget=forms.Textarea)
-    content = forms.CharField(widget=forms.Textarea)
+class AskForm(forms.ModelForm):
+    class Meta:
+        model = Question
+        fields = ["title", "content"]
+
     tags = forms.CharField(max_length=255, widget=forms.Textarea)
 
     def __init__(self, request: http.HttpRequest, *args, **kwargs):

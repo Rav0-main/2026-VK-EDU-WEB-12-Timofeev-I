@@ -5,29 +5,27 @@ from django.contrib import auth
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
-from django.utils.http import url_has_allowed_host_and_scheme
-from django.conf import settings
 
 from core import forms
-from core.mixins import CommonViewContextMixin
+from core.mixins import CommonViewContextMixin, RedirectUrlValidatorMixin
 
 
-class UserLoginView(CommonViewContextMixin, View):
+class UserLoginView(CommonViewContextMixin, RedirectUrlValidatorMixin, View):
     template_name: str = "core/login.html"
     http_method_names = ["post", "get"]
 
     def post(self, request: http.HttpRequest):
         redirect_url = request.GET.get("next", reverse("core:login"))
-        if not self.is_redirect_url(request):
-            return http.HttpResponseForbidden(b"Error.Wrong redirect url.")
+        if not self.is_valide_redirect_url(request, redirect_url):
+            return http.HttpResponseForbidden(b"Error. Wrong redirect url.")
 
-        form = forms.UserLoginForm(request.POST)
+        form = forms.UserLoginForm(request, request.POST)
 
-        context = self.get_common_context_data(request)
+        context = self.get_common_context(request)
         context["redirect_url"] = redirect_url
         context["form"] = form
 
-        if form.is_valid() and request.user.is_anonymous:
+        if form.is_valid():
             auth.login(request, form.authenticated_user)
             return http.HttpResponseRedirect(redirect_url)
 
@@ -35,23 +33,17 @@ class UserLoginView(CommonViewContextMixin, View):
     
     def get(self, request: http.HttpRequest):
         redirect_url = request.GET.get("next", reverse("questions:index"))
-        form = forms.UserLoginForm()
+        if not self.is_valide_redirect_url(request, redirect_url):
+            return http.HttpResponseForbidden(b"Error. Wrong redirect url.")
 
-        context = self.get_common_context_data(request)
+        form = forms.UserLoginForm(request)
+
+        context = self.get_common_context(request)
 
         context["redirect_url"] = redirect_url
         context["form"] = form
 
         return render(request, self.template_name, context=context)
-    
-    def is_redirect_url(self, request: http.HttpRequest) -> bool:
-        redirect_url = request.GET.get("next", reverse("core:login"))
-
-        return redirect_url is not None and redirect_url != "" and \
-            url_has_allowed_host_and_scheme(
-                url=redirect_url,
-                allowed_hosts={request.get_host(), *settings.ALLOWED_HOSTS},
-            )
     
 
 class UserRegisterView(CommonViewContextMixin, View):
@@ -59,9 +51,8 @@ class UserRegisterView(CommonViewContextMixin, View):
     http_method_names = ["post", "get"]
 
     def post(self, request: http.HttpRequest):
-        form = forms.UserRegisterForm(request.POST)
-
-        context = self.get_common_context_data(request)
+        form = forms.UserRegisterForm(request, request.POST)
+        context = self.get_common_context(request)
 
         if form.is_valid():
             registered_user = form.save()
@@ -74,13 +65,14 @@ class UserRegisterView(CommonViewContextMixin, View):
         return render(request, self.template_name, context=context)
     
     def get(self, request: http.HttpRequest):
-        context = self.get_common_context_data(request)
-        context["current_url"] = request.path
+        form = forms.UserRegisterForm(request)
+        context = self.get_common_context(request)
+        context["form"] = form
 
         return render(request, self.template_name, context=context)
        
 
-class UserLogoutView(View):
+class UserLogoutView(RedirectUrlValidatorMixin, View):
     http_method_names = ["post"]
 
     def post(self, request: http.HttpRequest):
@@ -89,7 +81,10 @@ class UserLogoutView(View):
         if stay_on_url == "":
             stay_on_url = reverse("questions:index")
 
-        if request.user.is_authenticated:
+        if not self.is_valide_redirect_url(request, stay_on_url):
+            return http.HttpResponseForbidden(b"Error. Wrong redirect url.")
+
+        elif request.user.is_authenticated:
             auth.logout(request)
 
         return http.HttpResponseRedirect(stay_on_url)
@@ -100,8 +95,7 @@ class UserProfileView(LoginRequiredMixin, CommonViewContextMixin, View):
     login_url = reverse_lazy("core:login")
 
     def post(self, request: http.HttpRequest):
-        context = self.get_common_context_data(request)
-
+        context = self.get_common_context(request)
         form = forms.UserProfileForm(request, request.POST)
         context["form"] = form
 
@@ -112,7 +106,7 @@ class UserProfileView(LoginRequiredMixin, CommonViewContextMixin, View):
         return render(request, self.template_name, context=context)
 
     def get(self, request: http.HttpRequest):
-        context = self.get_common_context_data(request)
+        context = self.get_common_context(request)
         form = forms.UserProfileForm(request)
 
         context["form"] = form
@@ -125,7 +119,6 @@ class Http404View(CommonViewContextMixin, TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-
-        context |= self.get_common_context_data(self.request)
+        context |= self.get_common_context(self.request)
 
         return context

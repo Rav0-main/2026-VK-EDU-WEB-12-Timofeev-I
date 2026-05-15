@@ -21,7 +21,7 @@ class QuestionManager(models.Manager):
     def get_answers(self, question_id: int) -> QuerySet | list:
         try:
             return self.get(id=question_id).answers \
-                        .all().annotate(vote_count=models.Sum("likes__type")) \
+                        .all().annotate(vote_count=models.Sum("likes__type", default=0)) \
                         .order_by("-is_correct", "-vote_count", "-published_datetime")
 
         except exceptions.ObjectDoesNotExist:
@@ -32,6 +32,6 @@ class QuestionManager(models.Manager):
     
     def __form_question_query_set(self, query_set: QuerySet) -> QuerySet:
         return query_set.prefetch_related("answers", "likes", "tags", "tags__content") \
-                        .annotate(vote_count=models.Sum("likes__type"),
+                        .annotate(vote_count=models.Sum("likes__type", default=0),
                                   answers_count=models.Count("answers", distinct=True)
                                 )
