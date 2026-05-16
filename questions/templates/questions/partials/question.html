@@ -16,7 +16,7 @@
     </div>
     <div class="d-flex flex-wrap">
       <div style="margin-right: 0.5rem;">
-        <strong>Tags:</strong>
+        <strong>Теги:</strong>
       </div>
       <div>
         {% for tag in question.tags.all %}
@@ -26,7 +26,7 @@
       <div style="margin-left: 1.0rem;">
         <a class="link-offset-2 link-underline link-underline-opacity-0 text-dark"
           href="{% url 'questions:question' question_id=question.id %}">
-          <strong>Answers</strong>: <span class="answer-count">{{ question.answers_count }}</span>
+          <strong>Ответы</strong>: <span class="answer-count">{{ question.answers_count }}</span>
         </a>
       </div>
     </div>

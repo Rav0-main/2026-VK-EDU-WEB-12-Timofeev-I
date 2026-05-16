@@ -18,14 +18,14 @@
 
 {% else %}
 <div class="mb-3 text-danger" style="font-size: 2.1rem; font-weight: 500">
-  Question not found.
+  Вопрос не найден.
 </div>
 {% endif %}
 
 {% if question %}
 <div class="answers-header">
   <h2 class="mb-2 text-info">
-    Answers
+    Ответы
   </h2>
 </div>
 
@@ -46,7 +46,7 @@
 
     <div class="d-flex flex-wrap" style="margin-top: auto;">
       <h5 class="text-success">
-        Correct.
+        Верный.
       </h5>
     </div>
   </div>
@@ -74,7 +74,7 @@
 
     <div class="d-flex flex-wrap" style="margin-top: auto;">
       <h5 class="text-warning">
-        Not checked.
+        Не проверено.
       </h5>
     </div>
   </div>
@@ -103,7 +103,7 @@
 {% else %}
 
 <div class="mb-3 text-danger" style="font-size: 1.2rem; font-weight: 500">
-  No answers, you can first!
+  Ответов нет. Вы можете стать первым!
 </div>
 
 {% endif %}
@@ -114,12 +114,12 @@
 <form method="POST" action="{% url "questions:add_answer" question_id=question.id %}">
 {% csrf_token %}
 <div class="input-group" style="height: 7.5rem;">
-  <span class="input-group-text prompt-primary">Your solution: </span>
-  <textarea class="form-control" placeholder="Type your solution..." required name="content">{{ form.cleaned_data.content }}</textarea>
+  <span class="input-group-text prompt-primary">Ваше решение: </span>
+  <textarea class="form-control" placeholder="Введите ваше решение..." required name="content">{{ form.cleaned_data.content }}</textarea>
 </div>
 
 <div style="margin: 0.7rem; margin-right: 0; display: flex; justify-content: flex-end;">
-  <button class="btn btn-primary btn-lg">Solve</button>
+  <button class="btn btn-primary btn-lg">Написать</button>
 </div>
 </form>
 {% endif %}

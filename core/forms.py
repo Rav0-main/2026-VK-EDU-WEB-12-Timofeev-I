@@ -19,21 +19,21 @@ class UserLoginForm(forms.Form, UserFieldsPrepareMixin):
 
     def clean(self):
         if self.request.user.is_authenticated:
-            raise forms.ValidationError("Error. You already logined.")
+            raise forms.ValidationError("Вы уже авторизованы.")
         
         self.cleaned_data = super().clean()
         self.prepare_user_data(self.cleaned_data)
 
         if self.cleaned_data["username"] is None or \
             self.cleaned_data["password"] is None:
-            raise forms.ValidationError("Error. You must be input all fields.")
+            raise forms.ValidationError("Вы должны заполнить все поля.")
 
         self.authenticated_user = auth.authenticate(
             username=self.cleaned_data["username"], password=self.cleaned_data["password"]
         )
 
         if self.authenticated_user is None:
-            raise forms.ValidationError("Error. Invalid login or password.")
+            raise forms.ValidationError("Неверный логин или пароль.")
 
 
 class UserRegisterForm(forms.Form, UserFieldsPrepareMixin):
@@ -49,7 +49,7 @@ class UserRegisterForm(forms.Form, UserFieldsPrepareMixin):
 
     def clean(self):
         if self.request.user.is_authenticated and self.request.user.is_active:
-            raise forms.ValidationError("Error. You already logined.")
+            raise forms.ValidationError("Вы уже авторизованы.")
 
         self.cleaned_data = super().clean()
         self.prepare_user_data(self.cleaned_data)
@@ -59,15 +59,15 @@ class UserRegisterForm(forms.Form, UserFieldsPrepareMixin):
             self.cleaned_data["nickname"] == "" or \
             self.cleaned_data["password"] == "" or \
             self.cleaned_data["password_confirmation"] == "":
-            raise forms.ValidationError("Error. You must be input all fields.")
+            raise forms.ValidationError("Вы должны заполнить все поля.")
 
         password_validation.validate_password(self.cleaned_data["password"], user=None)
 
         if self.cleaned_data["password"] != self.cleaned_data["password_confirmation"]:
-            raise forms.ValidationError("Error. Passwords must be equals.")
+            raise forms.ValidationError("Введенные пароли не совпадают.")
         
         elif User.objects.filter(username=self.cleaned_data["username"]).first() is not None:
-            raise forms.ValidationError("Error. User already exists.")
+            raise forms.ValidationError("Пользователь уже существует.")
         
         return self.cleaned_data
         
@@ -126,7 +126,7 @@ class UserProfileForm(forms.Form, UserFieldsPrepareMixin):
 
     def clean(self):
         if not self.request.user.is_authenticated:
-            raise forms.ValidationError("Error. User must be authenticated.")
+            raise forms.ValidationError("Вы должны быть авторизованы.")
 
         self.cleaned_data = super().clean()
         self.prepare_user_data(self.cleaned_data)
@@ -135,7 +135,7 @@ class UserProfileForm(forms.Form, UserFieldsPrepareMixin):
             previous_nickname = UserProfile.objects.get(user=self.request.user).nickname
 
         except UserProfile.DoesNotExist:
-            raise forms.ValidationError("Error. You must be have profile.")
+            raise forms.ValidationError("У вас должен быть профиль.")
 
         previous_username = self.request.user.username
         previos_email = self.request.user.email
@@ -143,18 +143,18 @@ class UserProfileForm(forms.Form, UserFieldsPrepareMixin):
         if previous_username == self.cleaned_data["username"] and \
             previous_nickname == self.cleaned_data["nickname"] and \
             previos_email == self.cleaned_data["email"]:
-            raise forms.ValidationError("Error. You must be change fields.")
+            raise forms.ValidationError("Вы должны изменить поля.")
         
         elif self.cleaned_data["username"] == "" or \
             self.cleaned_data["email"] == "" or \
             self.cleaned_data["nickname"] == "":
-            raise forms.ValidationError("Error. You must be input all fields.")
+            raise forms.ValidationError("Вы должны заполнить все поля.")
 
         elif self.cleaned_data["username"] != previous_username:
             exists_user = User.objects.filter(username=self.cleaned_data["username"]).first()
 
             if exists_user:
-                raise forms.ValidationError("Error. User with new login already exists.")
+                raise forms.ValidationError("Пользователь с таким логином уже существует.")
 
         return self.cleaned_data
     

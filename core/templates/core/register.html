@@ -8,7 +8,7 @@
 {% block content %}
 <div class="mb-4">
   <h2 class="fw-bold text-info" style="border-left: 5px solid #0dcaf0; padding-left: 1rem;">
-    Registration
+    Регистрация
   </h2>
 </div>
 
@@ -26,41 +26,41 @@
   
   <div class="form-group mb-3">
     <div class="input-group" style="height: 3.3rem">
-      <span class="input-group-text prompt-primary">Login: </span>
+      <span class="input-group-text prompt-primary">Логин: </span>
       <input type="text" class="form-control" name="username"
-      placeholder="Type login..." required value="{{ form.cleaned_data.username }}">
+      placeholder="Введите логин..." required value="{{ form.cleaned_data.username }}">
     </div>
   </div>
 
   <div class="form-group mb-4">
     <div class="input-group" style="height: 3.3rem">
-      <span class="input-group-text prompt-primary">Email: </span>
+      <span class="input-group-text prompt-primary">Электронная почта: </span>
       <input type="email" class="form-control" name="email"
-      placeholder="Type email..." required value="{{ form.cleaned_data.email }}">
+      placeholder="Введите электронную почту..." required value="{{ form.cleaned_data.email }}">
     </div>
   </div>
 
   <div class="form-group mb-4">
     <div class="input-group" style="height: 3.3rem">
-      <span class="input-group-text prompt-primary">NickName: </span>
+      <span class="input-group-text prompt-primary">Псевдоним: </span>
       <input type="text" class="form-control" name="nickname"
-      placeholder="Type nickname..." required value="{{ form.cleaned_data.nickname }}">
+      placeholder="Введите псевдоним..." required value="{{ form.cleaned_data.nickname }}">
     </div>
   </div>
 
   <div class="form-group mb-3">
     <div class="input-group" style="height: 3.3rem">
-      <span class="input-group-text prompt-primary">Password: </span>
+      <span class="input-group-text prompt-primary">Пароль: </span>
       <input type="password" class="form-control" name="password"
-      placeholder="Type password..." required>
+      placeholder="Введите пароль..." required>
     </div>
   </div>
 
   <div class="form-group mb-4">
     <div class="input-group" style="height: 3.3rem">
-      <span class="input-group-text prompt-primary">Repeat password: </span>
+      <span class="input-group-text prompt-primary">Повторите пароль: </span>
       <input type="password" class="form-control" name="password_confirmation"
-      placeholder="Repeat password..." required>
+      placeholder="Повторите пароль..." required>
     </div>
   </div>
 
@@ -70,6 +70,6 @@
     </div>
   </div>
 
-  <button type="submit" class="btn btn-primary btn-lg">Register</button>
+  <button type="submit" class="btn btn-primary btn-lg">Зарегистрироваться</button>
 </form>
 {% endblock %}

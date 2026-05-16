@@ -18,16 +18,16 @@ class AddAnswerForm(forms.ModelForm):
     def clean(self):
         self.question = Question.objects.filter(id=self.question_id).first()
         if self.question is None:
-            raise forms.ValidationError("Error. Question not found.")
+            raise forms.ValidationError("Вопрос не найден.")
 
         elif self.cleaned_data["content"] == "":
-            raise forms.ValidationError("Error. You must be input answer.")
+            raise forms.ValidationError("Вы должны ввести ответ.")
 
         if Answer.objects.filter(
                 question=self.question, content=self.cleaned_data["content"],
                 author=self.request.user
             ).first():
-            raise forms.ValidationError("Error. You already answered at question.")
+            raise forms.ValidationError("Вы также отвечали на этот вопрос ранее.")
 
     def save(self):
         try:
@@ -57,14 +57,14 @@ class AskForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         if not self.request.user.is_authenticated or not self.request.user.is_active:
-            raise forms.ValidationError("Error. User must be authenticated.")
+            raise forms.ValidationError("Вы должны быть авторизованы.")
 
         exist_question = Question.objects.filter(
             title=cleaned_data["title"], content=cleaned_data["content"]
         ).first()
 
         if exist_question is not None:
-            raise forms.ValidationError("Error. Question already exists.")
+            raise forms.ValidationError("Такой вопрос уже существует")
 
     def save(self):
         tags_list: set[str] = set(map(lambda s: s.lower(), self.cleaned_data["tags"].split()))
@@ -96,4 +96,4 @@ class AskForm(forms.ModelForm):
         )
 
         return question
-        
+    
