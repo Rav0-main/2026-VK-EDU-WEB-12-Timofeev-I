@@ -76,3 +76,23 @@ python manage.py fill_db --ratio 100
 ```
 python manage.py createsuperuser
 ```
+
+## Домашнее задание №4
+
+Чтобы запустить **на собственной машине** нужно настроить `.env`. При отладке (DEBUG==True) выбирается база данных SQLite3. Иначе, нужно настроить **PostgreSQL** в `.env`, пример приведен в `.env.example`.
+
+0) **Подготовка**:
+
+```
+python -m .venv venv
+pip install -r requirements.txt
+
+python manage.py makemigrations
+python manage.py migrate
+```
+
+1) **Запуск** сервера:
+
+```
+python manage.py runserver
+```
