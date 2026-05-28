@@ -18,8 +18,11 @@ class CommonViewContextMixin:
         if context["logined"]:
             try:
                 context["user_nickname"] = request.user.profile.nickname
+                context["avatar_url"] = request.user.profile.avatar.url
+                
             except UserProfile.DoesNotExist:
                 context["user_nickname"] = request.user.username
+                context["avatar_url"] = "#"
 
         return context
 

@@ -1,7 +1,7 @@
 {% load static %}
 <div class="question d-flex" style="margin: 0;">
   <div class="question-avatar">
-    <img src="#"
+    <img src="{% if question.author.profile.avatar %}{{ question.author.profile.avatar.url }}{% endif %}"
       class="question-avatar img-fluid">
   </div>
   <div class="flex-grow-1" style="margin-left: 0.5rem; margin-right: 0.5rem;">

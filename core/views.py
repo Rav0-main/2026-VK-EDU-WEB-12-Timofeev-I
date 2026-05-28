@@ -51,7 +51,7 @@ class UserRegisterView(CommonViewContextMixin, View):
     http_method_names = ["post", "get"]
 
     def post(self, request: http.HttpRequest):
-        form = forms.UserRegisterForm(request, request.POST)
+        form = forms.UserRegisterForm(request, request.POST, request.FILES)
         context = self.get_common_context(request)
 
         if form.is_valid():
@@ -96,7 +96,7 @@ class UserProfileView(LoginRequiredMixin, CommonViewContextMixin, View):
 
     def post(self, request: http.HttpRequest):
         context = self.get_common_context(request)
-        form = forms.UserProfileForm(request, request.POST)
+        form = forms.UserProfileForm(request, request.POST, request.FILES)
         context["form"] = form
 
         if form.is_valid():

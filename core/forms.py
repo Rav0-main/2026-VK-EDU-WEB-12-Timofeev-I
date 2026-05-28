@@ -1,12 +1,14 @@
 from django import forms
 from django.contrib import auth
 from django import http
+from django.core.validators import FileExtensionValidator, BaseValidator
 from django.contrib.auth.models import User
 from django.contrib.auth import password_validation
 from django.db import IntegrityError
 
 from core.models import UserProfile
 from core.mixins import UserFieldsPrepareMixin
+
 
 class UserLoginForm(forms.Form, UserFieldsPrepareMixin):
     username = forms.CharField(max_length=127)
@@ -36,16 +38,34 @@ class UserLoginForm(forms.Form, UserFieldsPrepareMixin):
             raise forms.ValidationError("Неверный логин или пароль.")
 
 
+class ImageFileSizeValidator(BaseValidator):
+    message = "Размер файла не должен превышать %(limit_value)s МБ."
+    code = None
+
+    def compare(self, image_file, max_size_mb: float) -> bool:
+        return image_file and image_file.size > 1024 * 1024 * max_size_mb
+
+
 class UserRegisterForm(forms.Form, UserFieldsPrepareMixin):
     username = forms.CharField(max_length=127)
     email = forms.EmailField(max_length=255)
     nickname = forms.CharField(max_length=127)
     password = forms.CharField(max_length=127, widget=forms.PasswordInput)
     password_confirmation = forms.CharField(max_length=127, widget=forms.PasswordInput)
+    avatar = forms.ImageField(required=False)
 
     def __init__(self, request: http.HttpRequest, *args, **kwargs):
         self.request = request
         super().__init__(*args, **kwargs)
+        self.fields["avatar"].validators.extend([
+            FileExtensionValidator(
+                allowed_extensions=["png", "jpeg", "jpg"],
+                message="Разрешены только PNG, JPEG, JPG файлы. Вы загрузили файл с расширением %(extension)s"
+            ),
+            ImageFileSizeValidator(
+                limit_value=6.7
+            )
+        ])
 
     def clean(self):
         if self.request.user.is_authenticated and self.request.user.is_active:
@@ -85,7 +105,10 @@ class UserRegisterForm(forms.Form, UserFieldsPrepareMixin):
             ).first()
                 
         try:
-            UserProfile.objects.create(user=registered_user, nickname=self.cleaned_data["nickname"])
+            UserProfile.objects.create(
+                user=registered_user, nickname=self.cleaned_data["nickname"],
+                avatar=self.cleaned_data.get("avatar")
+            )
         
         except IntegrityError:
             ...
@@ -97,72 +120,93 @@ class UserProfileForm(forms.Form, UserFieldsPrepareMixin):
     username = forms.CharField(max_length=127)
     email = forms.EmailField(max_length=255)
     nickname = forms.CharField(max_length=127)
+    avatar = forms.ImageField(required=False)
 
     def __init__(self, request: http.HttpRequest, *args, **kwargs):
         self.request = request
-
         super().__init__(*args, **kwargs)
 
+        self.fields["avatar"].validators.extend([
+            FileExtensionValidator(
+                allowed_extensions=["png", "jpeg", "jpg"],
+                message="Разрешены только PNG, JPEG, JPG файлы. Вы загрузили файл с расширением %(extension)s"
+            ),
+            ImageFileSizeValidator(
+                limit_value=6.7
+            )
+        ])
+
         if request.method == "GET":
-            self.cleaned_data = {}
-            if UserProfile.objects.filter(user=request.user).first() is None:
-                self.cleaned_data["nickname"] = ""
-                self.cleaned_data["username"] = request.user.username
-                self.cleaned_data["email"] = request.user.email
+            self.__init_cleaned_data()
 
-            else:
-                try:
-                    user = User.objects.prefetch_related("profile") \
-                        .get(username=request.user.username)
+    def __init_cleaned_data(self):
+        user_profile = UserProfile.objects.filter(user=self.request.user).first()
         
-                    self.cleaned_data["username"] = user.username
-                    self.cleaned_data["nickname"] = user.profile.nickname
-                    self.cleaned_data["email"] = user.email
-
-                except User.DoesNotExist:
-                    self.cleaned_data["username"] = ""
-                    self.cleaned_data["nickname"] = ""
-                    self.cleaned_data["email"] = ""
+        if user_profile is None:
+            self.cleaned_data = {
+                "username": self.request.user.username,
+                "email": self.request.user.email,
+                "nickname": "",
+            }
+        else:
+            self.cleaned_data = {
+                "username": self.request.user.username,
+                "email": self.request.user.email,
+                "nickname": user_profile.nickname,
+            }
 
     def clean(self):
+        cleaned_data = super().clean()
+        
         if not self.request.user.is_authenticated:
             raise forms.ValidationError("Вы должны быть авторизованы.")
 
-        self.cleaned_data = super().clean()
-        self.prepare_user_data(self.cleaned_data)
+        username = cleaned_data.get("username", "")
+        email = cleaned_data.get("email", "")
+        nickname = cleaned_data.get("nickname", "")
+        avatar = cleaned_data.get("avatar")
+
+        if not username or not email or not nickname:
+            raise forms.ValidationError("Вы должны заполнить все поля.")
 
         try:
-            previous_nickname = UserProfile.objects.get(user=self.request.user).nickname
-
+            user_profile = UserProfile.objects.get(user=self.request.user)
+            previous_nickname = user_profile.nickname
         except UserProfile.DoesNotExist:
             raise forms.ValidationError("У вас должен быть профиль.")
 
         previous_username = self.request.user.username
-        previos_email = self.request.user.email
+        previous_email = self.request.user.email
 
-        if previous_username == self.cleaned_data["username"] and \
-            previous_nickname == self.cleaned_data["nickname"] and \
-            previos_email == self.cleaned_data["email"]:
-            raise forms.ValidationError("Вы должны изменить поля.")
+        if  previous_username == username and \
+            previous_nickname == nickname and \
+            previous_email == email and \
+            not avatar:
+            raise forms.ValidationError("Вы должны изменить хотя бы одно поле или загрузить аватар.")
         
-        elif self.cleaned_data["username"] == "" or \
-            self.cleaned_data["email"] == "" or \
-            self.cleaned_data["nickname"] == "":
-            raise forms.ValidationError("Вы должны заполнить все поля.")
-
-        elif self.cleaned_data["username"] != previous_username:
-            exists_user = User.objects.filter(username=self.cleaned_data["username"]).first()
-
+        if username != previous_username:
+            exists_user = User.objects.filter(username=username).exclude(id=self.request.user.id).first()
             if exists_user:
                 raise forms.ValidationError("Пользователь с таким логином уже существует.")
 
-        return self.cleaned_data
+        cleaned_data = self.prepare_user_data(cleaned_data)
+
+        return cleaned_data
     
     def save(self):
-        User.objects.filter(id=self.request.user.pk) \
-            .update(username=self.cleaned_data["username"],
-                    email=self.cleaned_data["email"])
+        cleaned_data = self.cleaned_data
         
-        UserProfile.objects.filter(user=self.request.user) \
-            .update(nickname=self.cleaned_data["nickname"])
-    
+        User.objects.filter(id=self.request.user.pk).update(
+            username=cleaned_data["username"],
+            email=cleaned_data["email"]
+        )
+        
+        profile, created = UserProfile.objects.get_or_create(user=self.request.user)
+        
+        if cleaned_data.get("avatar"):
+            profile.avatar = cleaned_data["avatar"]
+            profile.nickname = cleaned_data["nickname"]
+        else:
+            profile.nickname = cleaned_data["nickname"]
+        
+        profile.save()

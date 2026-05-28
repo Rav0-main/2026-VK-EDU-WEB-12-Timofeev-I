@@ -20,7 +20,7 @@
 </div>
 {% endfor %}
 
-<form method="POST" action="{% url "core:settings" %}">
+<form method="POST" action="{% url "core:settings" %}" enctype="multipart/form-data">
 {% csrf_token %}
 <div class="mb-4" style="padding-right: 1.5rem;">
   <div class="input-group">
@@ -47,7 +47,7 @@
   <span style="font-size: large; font-weight: 500; margin-right: 0.7rem;">
     Аватар:
   </span>
-  <img src="#"
+  <img src="{{ avatar_url }}"
     style="max-width: 200px; height: auto; border-radius: 12px; border: 0.1rem solid #000000; padding: 0.2rem;">
 </div>
 
@@ -55,7 +55,7 @@
   <span style="font-size: large; font-weight: 500; padding-right: 0.7rem; align-self: center;">
     Новый аватар:
   </span>
-  <input type="file" class="form-control" accept="image/*">
+  <input type="file" class="form-control" accept="image/*" name="avatar">
 </div>
 
 <div style="margin: 0.7rem 0; text-align: left;">
