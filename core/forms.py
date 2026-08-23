@@ -103,12 +103,14 @@ class UserRegisterForm(forms.Form, UserFieldsPrepareMixin):
                 username=self.cleaned_data["username"], email=self.cleaned_data["email"],
                 password=self.cleaned_data["password"]
             ).first()
-                
+
         try:
-            UserProfile.objects.create(
-                user=registered_user, nickname=self.cleaned_data["nickname"],
-                avatar=self.cleaned_data.get("avatar")
+            registered_user_profile = UserProfile.objects.create(
+                    user=registered_user, nickname=self.cleaned_data["nickname"],
             )
+            if self.cleaned_data.get("avatar"):
+                registered_user_profile.avatar = self.cleaned_data["avatar"]
+    
         
         except IntegrityError:
             ...

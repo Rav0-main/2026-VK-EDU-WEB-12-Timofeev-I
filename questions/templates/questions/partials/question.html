@@ -1,8 +1,11 @@
 {% load static %}
 <div class="question d-flex" style="margin: 0;">
   <div class="question-avatar">
-    <img src="{% if question.author.profile.avatar %}{{ question.author.profile.avatar.url }}{% endif %}"
-      class="question-avatar img-fluid">
+    <img src="{% if question.author.profile.avatar %}{{ question.author.profile.avatar.url }}{% else %}#{% endif %}"
+      class="question-avatar img-fluid mb-2">
+    <div class="question-author">
+      {{ question.author.profile.nickname }}
+    </div>
   </div>
   <div class="flex-grow-1" style="margin-left: 0.5rem; margin-right: 0.5rem;">
     <div class="question-title">
@@ -15,6 +18,7 @@
       {{ question.content }}
     </div>
     <div class="d-flex flex-wrap">
+      {% if question.tags.count %}
       <div style="margin-right: 0.5rem;">
         <strong>Теги:</strong>
       </div>
@@ -23,7 +27,10 @@
         <a href="{% url 'questions:tag' tag_name=tag.content.name %}" class="tag-badge">{{ tag.content.name }}</a>
         {% endfor %}
       </div>
-      <div style="margin-left: 1.0rem;">
+      <div style="margin-right: 1.0rem">
+      </div>
+      {% endif %}
+      <div>
         <a class="link-offset-2 link-underline link-underline-opacity-0 text-dark"
           href="{% url 'questions:question' question_id=question.id %}">
           <strong>Ответы</strong>: <span class="answer-count">{{ question.answers_count }}</span>
@@ -32,16 +39,24 @@
     </div>
   </div>
   <div class="vote-controls">
-    <button class="btn btn-outline-success btn-sm vote-btn" {% if not logined %}disabled{% endif %}>
+    {% if question.user_liked != -1 %}
+    <button data-question="{{ question.id }}" data-type="1"
+      class="btn btn-outline-success btn-sm vote-btn {% if question.user_liked == 1 %}pressed{% endif %}"
+      {% if not logined or question.user_liked == 1 %}disabled{% endif %}>
       <strong>+</strong>
     </button>
+    {% endif %}
     {% if question.vote_count %}
     <span class="vote-count">{{ question.vote_count }}</span>
     {% else %}
     <span class="vote-count">0</span>
     {% endif %}
-    <button class="btn btn-outline-danger btn-sm vote-btn" {% if not logined %}disabled{% endif %}>
+    {% if question.user_liked != 1 %}
+    <button data-question="{{ question.id }}" data-type="-1"
+      class="btn btn-outline-danger btn-sm vote-btn {% if question.user_liked == -1 %}pressed{% endif %}"
+      {% if not logined or question.user_liked == -1 %}disabled{% endif %}>
       <strong>-</strong>
     </button>
+    {% endif %}
   </div>
 </div>

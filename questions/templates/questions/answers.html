@@ -35,7 +35,11 @@
 
 <div class="answer d-flex {% if answer.is_correct %}correct-answer{% endif %}">
   <div class="answer-avatar">
-    <img src="{% if answer.author.profile.avatar %}{{ answer.author.profile.avatar.url }}{% endif %}" class="answer-avatar img-fluid">
+    <img src="{% if answer.author.profile.avatar %}{{ answer.author.profile.avatar.url }}{% else %}#{% endif %}"
+    class="answer-avatar img-fluid">
+    <div class="answer-author">
+      {{ answer.author.profile.nickname }}
+    </div>
   </div>
   <div class="flex-grow-1" style="margin-left: 0.5rem; margin-right: 0.5rem; display: flex; flex-direction: column;">
     <div class="answer-text">

@@ -28,6 +28,15 @@
     padding: 0.2rem;
 }
 
+.answer-author {
+    text-align: center;
+    width: 80px;
+    height: auto;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #b3c7e1;
+}
+
 .answer-text {
     color: #010910eb;
     font-size: 0.9rem;

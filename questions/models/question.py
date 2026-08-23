@@ -24,3 +24,4 @@ class Question(models.Model):
 
     def __str__(self) -> str:
         return _(f"\"{self.title}\": @{self.author}")
+    

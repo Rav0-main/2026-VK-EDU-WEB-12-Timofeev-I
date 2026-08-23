@@ -53,7 +53,7 @@ class UsersCreator:
 
         user_profile = UserProfile()
         user_profile.user = user
-        user_profile.avatar_path = f"path/to/avatar_{user_id}"
+        user_profile.nickname = f"nickname_{user_id}"
 
         return (user, user_profile)
     
@@ -166,7 +166,7 @@ class TagCreator:
                     question=question,
                     content=tag_contents[i]
                 )
-                for i in range(randint(1, min(len(tag_contents), 7)))
+                for i in range(randint(1, min(len(tag_contents), 4)))
             )
             
         return tags

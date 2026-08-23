@@ -6,7 +6,8 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 
 from questions import forms
-from questions.models import Question
+from questions.models import Question, QuestionLike
+from questions.models._like_type import is_valid_like_type
 from questions import pagination
 
 from core.mixins import CommonViewContextMixin
@@ -17,16 +18,16 @@ class NewQuestionsView(CommonViewContextMixin, TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
+        context |= self.get_common_context(self.request)
 
         page_number = pagination.get_page_number_from(self.request)
         
-        new_questions = Question.objects.get_new_questions()
+        new_questions = Question.objects.get_new_questions(self.request.user if context["logined"] else None)
         
         page = pagination.get_page_of(new_questions, page_number)
-    
+
         context["questions"] = page.object_list
         context["page"] = page
-        context |= self.get_common_context(self.request)
 
         return context
     
@@ -36,18 +37,19 @@ class HotQuestionsView(CommonViewContextMixin, TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
+        context |= self.get_common_context(self.request)
 
         page_number: int = pagination.get_page_number_from(self.request)
 
-        hot_questions = Question.objects.get_hot_questions()
+        hot_questions = Question.objects.get_hot_questions(self.request.user if context["logined"] else None)
 
         page = pagination.get_page_of(hot_questions, page_number)
 
         context["questions"] = page.object_list
         context["page"] = page
-        context |= self.get_common_context(self.request)
 
         return context
+    
     
 class AddAnswerView(LoginRequiredMixin, CommonViewContextMixin, View):
     login_url = reverse_lazy("core:login")
@@ -65,6 +67,27 @@ class AddAnswerView(LoginRequiredMixin, CommonViewContextMixin, View):
             return http.HttpResponseRedirect(reverse("questions:question", kwargs={"question_id": question_id}))
 
         return render(request, self.template_name, context=context)
+    
+
+class AddQuestionLike(CommonViewContextMixin, View):
+    http_method_names = ["post"]
+
+    def post(self, request: http.HttpRequest, question_id: int):
+        user_logined = self.is_user_logined(request)
+        if not user_logined:
+            return http.JsonResponse({}, status=401)
+
+        like_type = request.GET.get("type")
+        if like_type is None or not is_valid_like_type(like_type):
+            return http.JsonResponse({}, status=400)
+        
+        question = Question.objects.filter(id=question_id).first()
+        like = QuestionLike.objects.add_to(question, like_type, request.user)
+        if like is None:
+            return http.JsonResponse({}, status=403)
+        
+        return http.JsonResponse({"question_like_id": f"{like.pk}"}, status=200)
+
 
 class QuestionView(CommonViewContextMixin, TemplateView):
     template_name: str = "questions/answers.html"
@@ -73,7 +96,7 @@ class QuestionView(CommonViewContextMixin, TemplateView):
         context = self.get_common_context(self.request)
         question_id = kwargs["question_id"]
 
-        question = Question.objects.get_question_by_id(question_id)
+        question = Question.objects.get_question_by_id(question_id, self.request.user if context["logined"] else None)
     
         page_number = pagination.get_page_number_from(self.request)
 
@@ -94,18 +117,18 @@ class QuestionsByTagView(CommonViewContextMixin, TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
+        context |= self.get_common_context(self.request)
         tag_name: str = kwargs["tag_name"]
 
         page_number = pagination.get_page_number_from(self.request)
 
-        questions_with_tag = Question.objects.get_questions_with_tag(tag_name)
+        questions_with_tag = Question.objects.get_questions_with_tag(tag_name, self.request.user if context["logined"] else None)
 
         page = pagination.get_page_of(questions_with_tag, page_number)
 
         context["questions"] = page.object_list
         context["page"] = page
         context["tag"] = tag_name
-        context |= self.get_common_context(self.request)
 
         return context
     

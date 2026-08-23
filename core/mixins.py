@@ -6,11 +6,12 @@ from core.managers import get_best_members
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.conf import settings
 
+
 class CommonViewContextMixin:
     def get_common_context(self, request: http.HttpRequest):
         context = {}
 
-        context["logined"] = request.user.is_authenticated and request.user.is_active
+        context["logined"] = self.is_user_logined(request)
         context["popular_tags"] = Tag.objects.get_popular_tags()
         context["best_members"] = get_best_members()
         context["current_url"] = request.path
@@ -18,13 +19,19 @@ class CommonViewContextMixin:
         if context["logined"]:
             try:
                 context["user_nickname"] = request.user.profile.nickname
-                context["avatar_url"] = request.user.profile.avatar.url
+                if request.user.profile.avatar:
+                    context["avatar_url"] = request.user.profile.avatar.url
+                else:
+                    context["avatar_url"] = "#"
                 
             except UserProfile.DoesNotExist:
                 context["user_nickname"] = request.user.username
                 context["avatar_url"] = "#"
 
         return context
+
+    def is_user_logined(self, request: http.HttpRequest):
+        return request.user.is_authenticated and request.user.is_active
 
 
 class UserFieldsPrepareMixin:

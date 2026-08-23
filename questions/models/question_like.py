@@ -1,8 +1,11 @@
 from django.db import models
 from django.utils.translation import gettext as _
 from questions.models._like_type import LikeType
+from questions.managers.question_like import QuestionLikeManager
 
 class QuestionLike(models.Model):
+    objects: QuestionLikeManager = QuestionLikeManager()
+    
     question = models.ForeignKey(
         "Question", on_delete=models.CASCADE, verbose_name=_("Вопрос"), related_name="likes"
     )

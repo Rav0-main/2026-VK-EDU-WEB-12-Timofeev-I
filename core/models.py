@@ -9,10 +9,16 @@ def get_user_avatar_path(instance, filename: str) -> str:
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField("auth.User", on_delete=models.CASCADE, verbose_name=_("Пользователь"), related_name="profile")
+    user = models.OneToOneField(
+        "auth.User", on_delete=models.CASCADE, verbose_name=_("Пользователь"),
+        related_name="profile"
+    )
 
     nickname = models.CharField(verbose_name=_("Отображаемое имя"), max_length=64)
-    avatar = models.ImageField(upload_to=get_user_avatar_path, verbose_name=_("Аватарка"), null=True, blank=True)
+    avatar = models.ImageField(
+        upload_to=get_user_avatar_path, verbose_name=_("Аватарка"),
+        default="avatars/default_user_avatar.avif"
+    )
 
     class Meta:
         verbose_name = _("Профиль пользователя")
