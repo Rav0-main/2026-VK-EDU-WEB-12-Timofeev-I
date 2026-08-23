@@ -21,8 +21,8 @@ class TagManager(models.Manager):
         return self.__form_popular_tags_from(
             [
                 name for name in self.values("content__name") \
-                .annotate(cnt=models.Count("content__name")) \
-                .order_by("-cnt")[:config.POPULAR_TAGS_COUNT]
+                .annotate(count=models.Count("content__name")) \
+                .order_by("-count")[:config.POPULAR_TAGS_COUNT]
                 .values_list("content__name", flat=True)
             ]
         )

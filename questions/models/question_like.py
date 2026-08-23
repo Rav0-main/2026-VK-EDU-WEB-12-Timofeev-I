@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext as _
-from questions.models._like_type import LikeType
+from questions.models._like_type import LikeType, is_valid_like_type
 from questions.managers.question_like import QuestionLikeManager
 
 class QuestionLike(models.Model):
@@ -35,4 +35,8 @@ class QuestionLike(models.Model):
 
     def __str__(self):
         return _(f"Лайк на вопрос: {self.question.title}, тип: \"{self.type}\", автор: {self.author}")
+
+    @staticmethod
+    def is_valid_type(like_type: str):
+        return is_valid_like_type(like_type)
     

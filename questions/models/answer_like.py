@@ -1,9 +1,12 @@
 from django.db import models
 from django.utils.translation import gettext as _
 
-from questions.models._like_type import LikeType
+from questions.managers.answer_like import AnswerLikeManager
+from questions.models._like_type import LikeType, is_valid_like_type
 
 class AnswerLike(models.Model):
+    objects: AnswerLikeManager = AnswerLikeManager()
+    
     answer = models.ForeignKey(
         "Answer", on_delete=models.CASCADE, verbose_name=_("Ответ"), related_name="likes"
     )
@@ -33,3 +36,7 @@ class AnswerLike(models.Model):
 
     def __str__(self):
         return _(f"Лайк на ответ: {self.answer.question.title}, тип: \"{self.type}\", автор лайка: {self.author}")
+
+    @staticmethod
+    def is_valid_type(like_type: str):
+        return is_valid_like_type(like_type)

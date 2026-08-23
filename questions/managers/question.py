@@ -3,6 +3,7 @@ from django.core import exceptions
 from django.db.models.query import QuerySet
 from django.db.models.functions import Coalesce
 from questions.models.question_like import QuestionLike
+from questions.models.answer_like import AnswerLike
 from questions.models.answer import Answer
 
 class QuestionManager(models.Manager):
@@ -21,11 +22,40 @@ class QuestionManager(models.Manager):
         except exceptions.ObjectDoesNotExist:
             return None
         
-    def get_answers(self, question_id: int) -> QuerySet | list:
+    def get_answers(self, question_id: int, user=None) -> QuerySet | list:
         try:
-            return self.get(id=question_id).answers \
-                        .all().annotate(vote_count=models.Sum("likes__type", default=0)) \
-                        .order_by("-is_correct", "-vote_count", "-published_datetime")
+            answers = self.get(id=question_id).answers
+
+            vote_subquery = models.Subquery(
+                AnswerLike.objects
+                .filter(answer=models.OuterRef("pk"))
+                .values("answer")
+                .annotate(total=models.Sum("type"))
+                .values("total")
+            )
+
+            if user:
+                user_liked_subquery = models.Subquery(
+                    AnswerLike.objects
+                    .filter(
+                        answer=models.OuterRef("pk"),
+                        author=user
+                    )
+                    .values("type")[:1]
+                )
+
+                return answers.annotate(
+                    vote_count=Coalesce(vote_subquery, 0),
+                    user_liked=Coalesce(user_liked_subquery, 0)
+                ).order_by("-is_correct", "-vote_count", "-published_datetime") \
+                .prefetch_related("author__profile")
+
+            else:
+                return answers.annotate(
+                    vote_count=Coalesce(vote_subquery, 0),
+                    user_liked=models.Value(0)
+                ).order_by("-is_correct", "-vote_count", "-published_datetime") \
+                .prefetch_related("author__profile")
 
         except exceptions.ObjectDoesNotExist:
             return []
@@ -36,28 +66,28 @@ class QuestionManager(models.Manager):
     def __form_question_query_set(self, user=None) -> QuerySet:
         vote_subquery = models.Subquery(
             QuestionLike.objects
-            .filter(question=models.OuterRef('pk'))
-            .values('question')
-            .annotate(total=models.Sum('type'))
-            .values('total')
+            .filter(question=models.OuterRef("pk"))
+            .values("question")
+            .annotate(total=models.Sum("type"))
+            .values("total")
         )
 
         answers_subquery = models.Subquery(
             Answer.objects
-            .filter(question=models.OuterRef('pk'))
-            .values('question')
-            .annotate(count=models.Count('pk'))
-            .values('count')
+            .filter(question=models.OuterRef("pk"))
+            .values("question")
+            .annotate(count=models.Count("pk"))
+            .values("count")
         )
 
         if user:
             user_liked_subquery = models.Subquery(
                 QuestionLike.objects
                 .filter(
-                    question=models.OuterRef('pk'),
+                    question=models.OuterRef("pk"),
                     author=user
                 )
-                .values('type')[:1]
+                .values("type")[:1]
             )
 
             return self.annotate(

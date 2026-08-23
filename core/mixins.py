@@ -51,7 +51,7 @@ class UserFieldsPrepareMixin:
     
 
 class RedirectUrlValidatorMixin:
-    def is_valide_redirect_url(self, request: http.HttpRequest, redirect_url: str) -> bool:
+    def is_valid_redirect_url(self, request: http.HttpRequest, redirect_url: str) -> bool:
         return redirect_url is not None and redirect_url != "" and \
             url_has_allowed_host_and_scheme(
                 url=redirect_url,

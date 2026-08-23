@@ -6,8 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 
 from questions import forms
-from questions.models import Question, QuestionLike
-from questions.models._like_type import is_valid_like_type
+from questions.models import Question, QuestionLike, Answer, AnswerLike
 from questions import pagination
 
 from core.mixins import CommonViewContextMixin
@@ -51,7 +50,7 @@ class HotQuestionsView(CommonViewContextMixin, TemplateView):
         return context
     
     
-class AddAnswerView(LoginRequiredMixin, CommonViewContextMixin, View):
+class AnswerAddView(LoginRequiredMixin, CommonViewContextMixin, View):
     login_url = reverse_lazy("core:login")
 
     template_name: str = "questions/answers.html"
@@ -69,7 +68,7 @@ class AddAnswerView(LoginRequiredMixin, CommonViewContextMixin, View):
         return render(request, self.template_name, context=context)
     
 
-class AddQuestionLike(CommonViewContextMixin, View):
+class QuestionLikeAddView(CommonViewContextMixin, View):
     http_method_names = ["post"]
 
     def post(self, request: http.HttpRequest, question_id: int):
@@ -78,7 +77,7 @@ class AddQuestionLike(CommonViewContextMixin, View):
             return http.JsonResponse({}, status=401)
 
         like_type = request.GET.get("type")
-        if like_type is None or not is_valid_like_type(like_type):
+        if like_type is None or not QuestionLike.is_valid_type(like_type):
             return http.JsonResponse({}, status=400)
         
         question = Question.objects.filter(id=question_id).first()
@@ -87,6 +86,26 @@ class AddQuestionLike(CommonViewContextMixin, View):
             return http.JsonResponse({}, status=403)
         
         return http.JsonResponse({"question_like_id": f"{like.pk}"}, status=200)
+    
+
+class AnswerLikeAddView(CommonViewContextMixin, View):
+    http_method_names = ["post"]
+
+    def post(self, request: http.HttpRequest, answer_id: int):
+        user_logined = self.is_user_logined(request)
+        if not user_logined:
+            return http.JsonResponse({}, status=401)
+
+        like_type = request.GET.get("type")
+        if like_type is None or not AnswerLike.is_valid_type(like_type):
+            return http.JsonResponse({}, status=400)
+
+        answer = Answer.objects.filter(id=answer_id).first()
+        like = AnswerLike.objects.add_to(answer, like_type, request.user)
+        if like is None:
+            return http.JsonResponse({}, status=403)
+
+        return http.JsonResponse({"answer_like_id":f"{like.pk}"}, status=200)
 
 
 class QuestionView(CommonViewContextMixin, TemplateView):
@@ -100,7 +119,7 @@ class QuestionView(CommonViewContextMixin, TemplateView):
     
         page_number = pagination.get_page_number_from(self.request)
 
-        answers = Question.objects.get_answers(question_id)
+        answers = Question.objects.get_answers(question_id, self.request.user if context["logined"] else None)
 
         page = pagination.get_page_of(answers, page_number)
 

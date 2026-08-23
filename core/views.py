@@ -16,7 +16,7 @@ class UserLoginView(CommonViewContextMixin, RedirectUrlValidatorMixin, View):
 
     def post(self, request: http.HttpRequest):
         redirect_url = request.GET.get("next", reverse("core:login"))
-        if not self.is_valide_redirect_url(request, redirect_url):
+        if not self.is_valid_redirect_url(request, redirect_url):
             return http.HttpResponseForbidden(b"Error. Wrong redirect url.")
 
         form = forms.UserLoginForm(request, request.POST)
@@ -33,7 +33,7 @@ class UserLoginView(CommonViewContextMixin, RedirectUrlValidatorMixin, View):
     
     def get(self, request: http.HttpRequest):
         redirect_url = request.GET.get("next", reverse("questions:index"))
-        if not self.is_valide_redirect_url(request, redirect_url):
+        if not self.is_valid_redirect_url(request, redirect_url):
             return http.HttpResponseForbidden(b"Error. Wrong redirect url.")
 
         form = forms.UserLoginForm(request)
@@ -81,7 +81,7 @@ class UserLogoutView(RedirectUrlValidatorMixin, View):
         if stay_on_url == "":
             stay_on_url = reverse("questions:index")
 
-        if not self.is_valide_redirect_url(request, stay_on_url):
+        if not self.is_valid_redirect_url(request, stay_on_url):
             return http.HttpResponseForbidden(b"Error. Wrong redirect url.")
 
         elif request.user.is_authenticated:
