@@ -15,17 +15,17 @@ function getCookie(name) {
     return cookieValue;
 }
 
-const CSRF_TOKEN_QUESTION_LIKE = getCookie('csrftoken');
-const BASE_URL_QUESTION_LIKE = "{% url 'questions:question_like_add' question_id=0 %}"
+const CSRF_TOKEN_ANSWER_SET_CORRECT = getCookie('csrftoken');
+const BASE_URL_ANSWER_SET_CORRECT = "{% url 'questions:answer_set_correct' answer_id=0 %}"
 
-async function send_vote(type, id) {
+async function send_vote(id) {
     try {
-        const url = BASE_URL_QUESTION_LIKE.replace("0", id) + `?type=${type}`
+        const url = BASE_URL_ANSWER_SET_CORRECT.replace("0", id)
         const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': CSRF_TOKEN_QUESTION_LIKE
+                'X-CSRFToken': CSRF_TOKEN_ANSWER_SET_CORRECT
             },
         });
 
@@ -39,21 +39,16 @@ async function send_vote(type, id) {
     }
 }
 
-function handle_vote_click(event) {
+function handle_set_correct_click(event) {
     const button = event.currentTarget;
-    const type = parseInt(button.dataset.type);
-    const id = parseInt(button.dataset.question);
+    const id = parseInt(button.dataset.answer);
     
-    if (type === 1 || type === -1) {
-        send_vote(type, id);
-    } else {
-        console.error('Некорректное значение type:', type);
-    }
+    send_vote(id);
 }
 
-const vote_buttons = document.querySelectorAll('.vote-btn');
+const buttons = document.querySelectorAll('.set-correct-btn');
 
-vote_buttons.forEach(button => {
-    button.addEventListener('click', handle_vote_click);
+buttons.forEach(button => {
+    button.addEventListener('click', handle_set_correct_click);
 });
 </script>

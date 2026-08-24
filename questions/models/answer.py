@@ -1,8 +1,11 @@
 from django.db import models
 from django.utils.translation import gettext as _
+from questions.managers.answer import AnswerManager
 
 
 class Answer(models.Model):
+    objects: AnswerManager = AnswerManager()
+    
     question = models.ForeignKey(
         "Question", on_delete=models.CASCADE, verbose_name=_("Вопрос"),
         related_name="answers"

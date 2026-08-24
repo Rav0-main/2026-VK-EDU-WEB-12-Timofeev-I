@@ -108,6 +108,26 @@ class AnswerLikeAddView(CommonViewContextMixin, View):
         return http.JsonResponse({"answer_like_id":f"{like.pk}"}, status=200)
 
 
+class AnswerSetCorrectView(CommonViewContextMixin, View):
+    http_method_names = ["post"]
+
+    def post(self, request: http.HttpRequest, answer_id: int):
+        user_logined = self.is_user_logined(request)
+        if not user_logined:
+            return http.JsonResponse({}, status=401)
+
+        answer = Answer.objects.filter(id=answer_id).first()
+        if answer is None:
+            return http.JsonResponse({}, status=404)
+
+        if answer.question.author != self.request.user:
+            return http.JsonResponse({}, status=403)
+        
+        Answer.objects.set_correct(answer_id)
+
+        return http.JsonResponse({"answer_id": answer_id}, status=200)
+
+
 class QuestionView(CommonViewContextMixin, TemplateView):
     template_name: str = "questions/answers.html"
 
@@ -116,6 +136,7 @@ class QuestionView(CommonViewContextMixin, TemplateView):
         question_id = kwargs["question_id"]
 
         question = Question.objects.get_question_by_id(question_id, self.request.user if context["logined"] else None)
+        user_is_question_author = Question.objects.is_question_author(self.request.user if context["logined"] else None, question)
     
         page_number = pagination.get_page_number_from(self.request)
 
@@ -127,6 +148,7 @@ class QuestionView(CommonViewContextMixin, TemplateView):
         context["page"] = page
         context["answers"] = page.object_list
         context["form"] = forms.AddAnswerForm(self.request, question_id)
+        context["user_is_question_author"] = user_is_question_author
 
         return context
     

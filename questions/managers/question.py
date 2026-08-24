@@ -21,6 +21,12 @@ class QuestionManager(models.Manager):
         
         except exceptions.ObjectDoesNotExist:
             return None
+
+    def is_question_author(self, user, question) -> bool:
+        if question is None:
+            return False
+
+        return question.author == user
         
     def get_answers(self, question_id: int, user=None) -> QuerySet | list:
         try:

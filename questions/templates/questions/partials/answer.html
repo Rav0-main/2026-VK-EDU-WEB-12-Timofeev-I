@@ -16,6 +16,9 @@
       <h5 class="text-success">
         Верный.
       </h5>
+      {% elif user_is_question_author %}
+      <button type="button" class="btn btn-success btn-sm set-correct-btn"
+      data-answer="{{ answer.id }}">Пометить верным</button>
       {% else %}
       <h5 class="text-warning">
         Не проверено.
