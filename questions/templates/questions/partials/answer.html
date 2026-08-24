@@ -2,7 +2,7 @@
   <div class="answer-avatar">
     <img src="{% if answer.author.profile.avatar %}{{ answer.author.profile.avatar.url }}{% else %}#{% endif %}"
     class="answer-avatar img-fluid">
-    <div class="answer-author">
+    <div class="answer-author text-center text-break">
       {{ answer.author.profile.nickname }}
     </div>
   </div>

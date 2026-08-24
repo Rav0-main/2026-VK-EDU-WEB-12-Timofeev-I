@@ -145,7 +145,7 @@ class TagCreator:
         for i in range(count):
             tag_contents.append(
                 TagContent(
-                    name=f"Tag {last_tag_id+1}"
+                    name=f"tag_{last_tag_id+1}"
                 )
             )
 

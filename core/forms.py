@@ -173,10 +173,10 @@ class UserProfileForm(forms.Form, UserFieldsPrepareMixin):
 
         try:
             user_profile = UserProfile.objects.get(user=self.request.user)
-            previous_nickname = user_profile.nickname
         except UserProfile.DoesNotExist:
-            raise forms.ValidationError("У вас должен быть профиль.")
+            user_profile = UserProfile.objects.create(user=self.request.user, nickname=self.request.user.username)
 
+        previous_nickname = user_profile.nickname
         previous_username = self.request.user.username
         previous_email = self.request.user.email
 
@@ -192,7 +192,6 @@ class UserProfileForm(forms.Form, UserFieldsPrepareMixin):
                 raise forms.ValidationError("Пользователь с таким логином уже существует.")
 
         cleaned_data = self.prepare_user_data(cleaned_data)
-
         return cleaned_data
     
     def save(self):
