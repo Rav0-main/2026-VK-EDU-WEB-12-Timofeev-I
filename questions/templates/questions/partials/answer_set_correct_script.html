@@ -18,7 +18,7 @@ function getCookie(name) {
 const CSRF_TOKEN_ANSWER_SET_CORRECT = getCookie('csrftoken');
 const BASE_URL_ANSWER_SET_CORRECT = "{% url 'questions:answer_set_correct' answer_id=0 %}"
 
-async function send_vote(id) {
+async function send_answer_set_correct(id) {
     try {
         const url = BASE_URL_ANSWER_SET_CORRECT.replace("0", id)
         const response = await fetch(url, {
@@ -43,12 +43,12 @@ function handle_set_correct_click(event) {
     const button = event.currentTarget;
     const id = parseInt(button.dataset.answer);
     
-    send_vote(id);
+    send_answer_set_correct(id);
 }
 
-const buttons = document.querySelectorAll('.set-correct-btn');
+const set_correct_buttons = document.querySelectorAll('.set-correct-btn');
 
-buttons.forEach(button => {
+set_correct_buttons.forEach(button => {
     button.addEventListener('click', handle_set_correct_click);
 });
 </script>
