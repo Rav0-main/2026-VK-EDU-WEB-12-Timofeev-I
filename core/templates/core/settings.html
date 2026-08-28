@@ -8,47 +8,59 @@
 {% block content %}
 <div class="mb-4">
   <h2 class="fw-bold text-info" style="border-left: 5px solid #0dcaf0; padding-left: 1rem;">
-    Settings: NickName
+    Профиль: {{ user.profile.nickname }}
   </h2>
 </div>
 
+{% for err_msg in form.non_field_errors %}
+<div class="mb-3">
+  <h5 class="text-danger">
+    {{ err_msg }}
+  </h5>
+</div>
+{% endfor %}
+
+<form method="POST" action="{% url "core:settings" %}" enctype="multipart/form-data">
+{% csrf_token %}
 <div class="mb-4" style="padding-right: 1.5rem;">
   <div class="input-group">
-    <span class="input-group-text prompt-primary">Login: </span>
-    <textarea class="form-control" placeholder="PREVIOUS_LOGIN"></textarea>
+    <span class="input-group-text prompt-primary">Логин: </span>
+    <textarea class="form-control" placeholder="Введите логин..." name="username">{{ form.cleaned_data.username }}</textarea>
   </div>
 </div>
 
 <div class="mb-4" style="padding-right: 1.5rem;">
   <div class="input-group">
-    <span class="input-group-text prompt-primary">Email: </span>
-    <textarea class="form-control" placeholder="PREVIOUS_EMAIL"></textarea>
+    <span class="input-group-text prompt-primary">Электронная почта: </span>
+    <textarea class="form-control" placeholder="Введите электронную почту..." name="email">{{ form.cleaned_data.email }}</textarea>
   </div>
 </div>
 
 <div class="mb-4" style="padding-right: 1.5rem;">
   <div class="input-group">
-    <span class="input-group-text prompt-primary">NickName: </span>
-    <textarea class="form-control" placeholder="PREVIOUS_NICK_NAME"></textarea>
+    <span class="input-group-text prompt-primary">Псевдоним: </span>
+    <textarea class="form-control" placeholder="Введите псевдоним..." name="nickname">{{ form.cleaned_data.nickname }}</textarea>
   </div>
 </div>
 
 <div class="mb-4 d-flex" style="padding-right: 1.5rem;">
   <span style="font-size: large; font-weight: 500; margin-right: 0.7rem;">
-    Avatar:
+    Аватар:
   </span>
-  <img src="#"
+  <img src="{{ avatar_url }}"
     style="max-width: 200px; height: auto; border-radius: 12px; border: 0.1rem solid #000000; padding: 0.2rem;">
 </div>
 
 <div class="input-group mb-3" style="padding-right: 1.5rem; max-width: 500px;">
   <span style="font-size: large; font-weight: 500; padding-right: 0.7rem; align-self: center;">
-    New avatar:
+    Новый аватар:
   </span>
-  <input type="file" class="form-control" accept="image/*">
+  <input type="file" class="form-control" accept="image/*" name="avatar">
 </div>
 
 <div style="margin: 0.7rem 0; text-align: left;">
-  <button class="btn btn-primary btn-lg" style="width: 7rem;">Save</button>
+  <button class="btn btn-primary btn-lg" style="text-align: center; width: 8rem;">Сохранить</button>
 </div>
+
+</form>
 {% endblock %}

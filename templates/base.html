@@ -36,53 +36,59 @@
 
         <div class="input-group ms-3" style="width: 40%; min-width: 280px;">
           <input type="text" class="form-control border-primary-subtle bg-light"
-            placeholder="Type question..." aria-label="Question" style="border-width: 2px;">
+            placeholder="Введите вопрос..." aria-label="Question" style="border-width: 2px;">
           <button class="btn btn-success" type="button">
-            Search
+            Поиск
           </button>
         </div>
 
+        {% if logined %}
         <div class="d-flex ms-3">
           <a href="{% url 'questions:ask' %}">
             <button class="btn btn-info btn-md px-4">
-              Ask
+              Спросить
             </button>
           </a>
         </div>
+        {% endif %}
       </div>
 
       {% if logined %}
       <div class="d-flex gap-2 mt-2 mt-sm-0" style="align-items: flex-start;">
         <div class="user-avatar" style="margin-right: 0.5rem;">
-          <img class="img-fluid user-avatar" src="#">
+          <img class="img-fluid user-avatar" src="{{ avatar_url }}">
         </div>
         <div style="flex: 1;">
           <h5 class="mb-3">
-            NickName
+            {{ user_nickname }}
           </h5>
           <div class="d-flex gap-2">
             <a href="{% url 'core:settings' %}">
               <button class="btn btn-secondary btn-sm">
-                Settings
+                Профиль
               </button>
             </a>
-            <button class="btn btn-danger btn-sm">
-              Log Out
-            </button>
+            <form method="POST" action="{% url "core:logout" %}?stay_on={{ current_url }}">
+              {% csrf_token %}
+
+              <button class="btn btn-danger btn-sm">
+                Выйти
+              </button>
+            </form>
           </div>
         </div>
       </div>
 
       {% else %}
       <div class="d-flex gap-2 mt-2 mt-sm-0">
-        <a href="{% url 'core:login' %}">
+        <a href="{% url 'core:login' %}?next={{ current_url }}">
           <button class="btn btn-secondary btn-md px-4">
-            Log in
+            Войти
           </button>
         </a>
         <a href="{% url 'core:register' %}">
           <button class="btn btn-primary btn-md px-4">
-            Register
+            Зарегистрироваться
           </button>
         </a>
       </div>
@@ -101,14 +107,13 @@
     <div class="sidebar">
       <div class="popular-tags">
         <div class="text-center mb-3">
-          <h2 class="section-title">Popular tags</h2>
+          <h2 class="section-title">Популярные теги</h2>
         </div>
         <div class="popular-tags-content">
           {% for popular_tag in popular_tags %}
-          <a href="{% url 'questions:tag' tag=popular_tag.name %}">
+          <a href="{% url 'questions:tag' tag_name=popular_tag.name %}">
             <span class="popular-tag"
-              style="color: {{ popular_tag.color }}; font-size: {{ popular_tag.font_size }};" 
-              >
+              style="color: {{ popular_tag.color }}; font-size: {{ popular_tag.font_size }};">
               {{ popular_tag.name }}
             </span>
           </a>
@@ -116,34 +121,7 @@
         </div>
       </div>
 
-      <div class="best-members">
-        <div class="text-center mb-3">
-          <h2 class="section-title" style="border-bottom-color: #0d6efd;">Best members</h2>
-        </div>
-        <div>
-          <div class="member">
-            <a class="link-primary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="#">
-              <h5 class="mb-1">
-                Petrov Ivan
-              </h5>
-            </a>
-          </div>
-          <div class="member">
-            <a class="link-danger link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="#">
-              <h5 class="mb-1">
-                Соболев Игнат
-              </h5>
-            </a>
-          </div>
-          <div class="member">
-            <a class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="#">
-              <h5 class="mb-1">
-                Федотов Максим
-              </h5>
-            </a>
-          </div>
-        </div>
-      </div>
+      {% include "best-members.html" %}
     </div>
   </div>
 

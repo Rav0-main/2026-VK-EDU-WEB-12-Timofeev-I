@@ -7,6 +7,11 @@
 > * [Домашнее задание №1](#домашнее-задание-1)
 >
 > * [Домашнее задание №2](#домашнее-задание-2)
+>
+> * [Домашнее задание №3](#домашнее-задание-3)
+>
+> * [Домашнее задание №4](#домашнее-задание-4)
+
 
 ## О себе.
 
@@ -42,3 +47,61 @@
     ```
     docker compose up --build
     ```
+
+## Домашнее задание №3
+
+Чтобы запустить **на собственной машине** нужно настроить `.env`. При отладке (DEBUG==True) выбирается база данных SQLite3. Иначе, нужно настроить **PostgreSQL** в `.env`, пример приведен в `.env.example`.
+
+0) **Подготовка**:
+
+```
+python -m .venv venv
+pip install -r requirements.txt
+
+python manage.py makemigrations
+python manage.py migrate
+```
+
+1) **Запуск** сервера:
+
+```
+python manage.py runserver
+```
+
+2) **Залить** данные в базу данных:
+
+```
+python manage.py fill_db --ratio 100
+```
+
+3) **Создать** супер-пользователя:
+
+```
+python manage.py createsuperuser
+```
+
+## Домашнее задание №4
+
+Чтобы запустить **на собственной машине** нужно настроить `.env`. При отладке (DEBUG==True) выбирается база данных SQLite3. Иначе, нужно настроить **PostgreSQL** в `.env`, пример приведен в `.env.example`.
+
+0) **Подготовка**:
+
+```
+python -m .venv venv
+pip install -r requirements.txt
+
+python manage.py makemigrations
+python manage.py migrate
+```
+
+1) **Запуск** сервера:
+
+```
+python manage.py runserver
+```
+
+2) **Откройте** браузер и зайдите на сайт:
+
+```
+http://127.0.0.1:8000
+```

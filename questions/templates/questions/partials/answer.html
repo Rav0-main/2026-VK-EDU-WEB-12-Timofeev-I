@@ -1,0 +1,48 @@
+<div class="answer d-flex {% if answer.is_correct %}correct-answer{% endif %}">
+  <div class="answer-avatar">
+    <img src="{% if answer.author.profile.avatar %}{{ answer.author.profile.avatar.url }}{% else %}#{% endif %}"
+    class="answer-avatar img-fluid">
+    <div class="answer-author text-center text-break">
+      {{ answer.author.profile.nickname }}
+    </div>
+  </div>
+  <div class="flex-grow-1" style="margin-left: 0.5rem; margin-right: 0.5rem; display: flex; flex-direction: column;">
+    <div class="answer-text">
+      {{ answer.content }}
+    </div>
+
+    <div class="d-flex flex-wrap" style="margin-top: auto;">
+      {% if answer.is_correct %}
+      <h5 class="text-success">
+        Верный.
+      </h5>
+      {% elif user_is_question_author %}
+      <button type="button" class="btn btn-success btn-sm set-correct-btn"
+      data-answer="{{ answer.id }}">Пометить верным</button>
+      {% else %}
+      <h5 class="text-warning">
+        Не проверено.
+      </h5>
+      {% endif %}
+    </div>
+  </div>
+  <div class="vote-controls">
+    {% if answer.user_liked != -1 %}
+    <button class="btn btn-outline-success btn-sm vote-btn {% if answer.user_liked == 1 %}pressed{% endif %}" 
+      data-answer="{{ answer.id }}" data-type="1"
+      {% if not logined or answer.user_liked == 1 %}disabled{% endif %}>
+      <strong>+</strong>
+    </button>
+    {% endif %}
+
+    <span class="vote-count">{{ answer.vote_count }}</span>
+    
+    {% if answer.user_liked != 1 %}
+    <button class="btn btn-outline-danger btn-sm vote-btn {% if answer.user_liked == -1 %}pressed{% endif %}"
+      data-answer="{{ answer.id }}" data-type="-1"
+      {% if not logined or answer.user_liked == -1%}disabled{% endif %}>
+      <strong>-</strong>
+    </button>
+    {% endif %}
+  </div>
+</div>

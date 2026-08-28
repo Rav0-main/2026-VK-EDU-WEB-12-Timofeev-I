@@ -1,0 +1,59 @@
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const CSRF_TOKEN_ANSWER_LIKE = getCookie('csrftoken');
+const BASE_URL_ANSWER_LIKE = "{% url 'questions:answer_like_add' answer_id=0 %}"
+
+async function send_vote(type, id) {
+    try {
+        const url = BASE_URL_ANSWER_LIKE.replace("0", id) + `?type=${type}`
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': CSRF_TOKEN_ANSWER_LIKE
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        window.location.reload();
+    } catch (error) {
+        console.error('Ошибка при отправке запроса:', error);
+    }
+}
+
+function handle_vote_click(event) {
+    const button = event.currentTarget;
+    const type = parseInt(button.dataset.type);
+    const id = parseInt(button.dataset.answer);
+    
+    if (type === 1 || type === -1) {
+        send_vote(type, id);
+    } else {
+        console.error('Некорректное значение type:', type);
+    }
+}
+
+const vote_buttons = document.querySelectorAll('.vote-btn');
+
+vote_buttons.forEach(button => {
+    button.addEventListener('click', handle_vote_click);
+});
+</script>
