@@ -18,7 +18,7 @@ function getCookie(name) {
 const CSRF_TOKEN_QUESTION_LIKE = getCookie('csrftoken');
 const BASE_URL_QUESTION_LIKE = "{% url 'questions:question_like_add' question_id=0 %}"
 
-async function send_vote(type, id) {
+async function send_question_like(type, id) {
     try {
         const url = BASE_URL_QUESTION_LIKE.replace("0", id) + `?type=${type}`
         const response = await fetch(url, {
@@ -39,21 +39,21 @@ async function send_vote(type, id) {
     }
 }
 
-function handle_vote_click(event) {
+function handle_question_like_click(event) {
     const button = event.currentTarget;
     const type = parseInt(button.dataset.type);
     const id = parseInt(button.dataset.question);
     
     if (type === 1 || type === -1) {
-        send_vote(type, id);
+        send_question_like(type, id);
     } else {
         console.error('Некорректное значение type:', type);
     }
 }
 
-const vote_buttons = document.querySelectorAll('.vote-btn');
+const question_like_buttons = document.querySelectorAll('.vote-btn');
 
-vote_buttons.forEach(button => {
-    button.addEventListener('click', handle_vote_click);
+question_like_buttons.forEach(button => {
+    button.addEventListener('click', handle_question_like_click);
 });
 </script>
