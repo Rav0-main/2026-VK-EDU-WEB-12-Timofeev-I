@@ -23,9 +23,13 @@ class NewQuestionsView(CommonViewContextMixin, TemplateView):
         
         new_questions = Question.objects.get_new_questions(self.request.user if context["logined"] else None)
         
-        page = pagination.get_page_of(new_questions, page_number)
+        page, page_range = pagination.get_page_and_page_range_of(new_questions, page_number)
+        pagination_range = pagination.get_pagination_page_range(page.number, page_range)
 
+        context["first_page"] = page_range.start if page_range.start != pagination_range.start else None
         context["questions"] = page.object_list
+        context["pagination_range"] = pagination_range
+        context["last_page"] = page_range.stop - 1 if pagination_range.stop != page_range.stop else None
         context["page"] = page
 
         return context
@@ -42,9 +46,13 @@ class HotQuestionsView(CommonViewContextMixin, TemplateView):
 
         hot_questions = Question.objects.get_hot_questions(self.request.user if context["logined"] else None)
 
-        page = pagination.get_page_of(hot_questions, page_number)
+        page, page_range = pagination.get_page_and_page_range_of(hot_questions, page_number)
+        pagination_range = pagination.get_pagination_page_range(page.number, page_range)
 
+        context["first_page"] = page_range.start if page_range.start != pagination_range.start else None
         context["questions"] = page.object_list
+        context["pagination_range"] = pagination_range
+        context["last_page"] = page_range.stop - 1 if pagination_range.stop != page_range.stop else None
         context["page"] = page
 
         return context
@@ -142,9 +150,13 @@ class QuestionView(CommonViewContextMixin, TemplateView):
 
         answers = Question.objects.get_answers(question_id, self.request.user if context["logined"] else None)
 
-        page = pagination.get_page_of(answers, page_number)
+        page, page_range = pagination.get_page_and_page_range_of(answers, page_number)
+        pagination_range = pagination.get_pagination_page_range(page.number, page_range)
 
+        context["first_page"] = page_range.start if page_range.start != pagination_range.start else None
         context["question"] = question
+        context["pagination_range"] = pagination_range
+        context["last_page"] = page_range.stop - 1 if pagination_range.stop != page_range.stop else None
         context["page"] = page
         context["answers"] = page.object_list
         context["form"] = forms.AddAnswerForm(self.request, question_id)
@@ -165,9 +177,13 @@ class QuestionsByTagView(CommonViewContextMixin, TemplateView):
 
         questions_with_tag = Question.objects.get_questions_with_tag(tag_name, self.request.user if context["logined"] else None)
 
-        page = pagination.get_page_of(questions_with_tag, page_number)
+        page, page_range = pagination.get_page_and_page_range_of(questions_with_tag, page_number)
+        pagination_range = pagination.get_pagination_page_range(page.number, page_range)
 
+        context["first_page"] = page_range.start if page_range.start != pagination_range.start else None
         context["questions"] = page.object_list
+        context["pagination_range"] = pagination_range
+        context["last_page"] = page_range.stop - 1 if pagination_range.stop != page_range.stop else None
         context["page"] = page
         context["tag"] = tag_name
 
