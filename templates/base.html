@@ -12,7 +12,7 @@
 
   <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
   
-  {% if logined %}
+  {% if user_logined %}
   <link rel="stylesheet" href="{% static 'css/avatar.css' %}">
   {% endif %}
 
@@ -42,7 +42,7 @@
           </button>
         </div>
 
-        {% if logined %}
+        {% if user_logined %}
         <div class="d-flex ms-3">
           <a href="{% url 'questions:ask' %}">
             <button class="btn btn-info btn-md px-4">
@@ -53,10 +53,10 @@
         {% endif %}
       </div>
 
-      {% if logined %}
+      {% if user_logined %}
       <div class="d-flex gap-2 mt-2 mt-sm-0" style="align-items: flex-start;">
         <div class="user-avatar" style="margin-right: 0.5rem;">
-          <img class="img-fluid user-avatar" src="{{ avatar_url }}">
+          <img class="img-fluid user-avatar" src="{{ user_avatar_url }}">
         </div>
         <div style="flex: 1;">
           <h5 class="mb-3">

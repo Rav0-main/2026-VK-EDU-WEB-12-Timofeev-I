@@ -20,7 +20,7 @@ class NewQuestionsView(CommonViewContextMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context |= self.get_common_context(self.request)
         
-        new_questions = Question.objects.get_new_questions(self.request.user if context["logined"] else None)
+        new_questions = Question.objects.get_new_questions(self.get_user())
         paginator = pagination.PaginationManager(
             self.request, new_questions,
             pagination.DEFAULT_PAGE_NUMBER, config.QUESTIONS_PER_PAGE
@@ -39,7 +39,7 @@ class HotQuestionsView(CommonViewContextMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context |= self.get_common_context(self.request)
 
-        hot_questions = Question.objects.get_hot_questions(self.request.user if context["logined"] else None)
+        hot_questions = Question.objects.get_hot_questions(self.get_user())
         paginator = pagination.PaginationManager(
             self.request, hot_questions, pagination.DEFAULT_PAGE_NUMBER, config.QUESTIONS_PER_PAGE
         )
@@ -135,10 +135,10 @@ class QuestionView(CommonViewContextMixin, TemplateView):
         context = self.get_common_context(self.request)
         question_id = kwargs["question_id"]
 
-        question = Question.objects.get_question_by_id(question_id, self.request.user if context["logined"] else None)
-        user_is_question_author = Question.objects.is_question_author(self.request.user if context["logined"] else None, question)
+        question = Question.objects.get_question_by_id(question_id, self.get_user())
+        user_is_question_author = Question.objects.is_question_author(self.get_user(), question)
     
-        answers = Question.objects.get_answers(question_id, self.request.user if context["logined"] else None)
+        answers = Question.objects.get_answers(question_id, self.get_user())
         paginator = pagination.PaginationManager(
             self.request, answers, pagination.DEFAULT_PAGE_NUMBER, config.ANSWERS_PER_PAGE
         )
@@ -160,7 +160,7 @@ class QuestionsByTagView(CommonViewContextMixin, TemplateView):
         context |= self.get_common_context(self.request)
         tag_name: str = kwargs["tag_name"]
 
-        questions_with_tag = Question.objects.get_questions_with_tag(tag_name, self.request.user if context["logined"] else None)
+        questions_with_tag = Question.objects.get_questions_with_tag(tag_name, self.get_user())
         paginator = pagination.PaginationManager(
             self.request, questions_with_tag, pagination.DEFAULT_PAGE_NUMBER, config.QUESTIONS_PER_PAGE
         )

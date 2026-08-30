@@ -51,7 +51,7 @@
 
 {% include 'questions/partials/pagination.html' %}
 
-{% if logined %}
+{% if user_logined %}
 <form method="POST" action="{% url "questions:answer_add" question_id=question.id %}">
 {% csrf_token %}
 <div class="input-group" style="height: 7.5rem;">

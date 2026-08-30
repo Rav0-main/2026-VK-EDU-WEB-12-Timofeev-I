@@ -8,30 +8,38 @@ from django.conf import settings
 
 
 class CommonViewContextMixin:
+    __slots__ = ["__user"]
+    
     def get_common_context(self, request: http.HttpRequest):
         context = {}
 
-        context["logined"] = self.is_user_logined(request)
+        context["user_logined"] = self.is_user_logined(request)
         context["popular_tags"] = Tag.objects.get_popular_tags()
         context["best_members"] = get_best_members()
         context["current_url"] = request.path
         
-        if context["logined"]:
+        if context["user_logined"]:
             try:
                 context["user_nickname"] = request.user.profile.nickname
+                self.__user = request.user
                 if request.user.profile.avatar:
-                    context["avatar_url"] = request.user.profile.avatar.url
+                    context["user_avatar_url"] = request.user.profile.avatar.url
                 else:
-                    context["avatar_url"] = "#"
+                    context["user_avatar_url"] = "#"
                 
             except UserProfile.DoesNotExist:
                 context["user_nickname"] = request.user.username
-                context["avatar_url"] = "#"
+                context["user_avatar_url"] = "#"
+        else:
+            self.__user = None
 
         return context
 
     def is_user_logined(self, request: http.HttpRequest):
         return request.user.is_authenticated and request.user.is_active
+
+    def get_user(self):
+        return self.__user
 
 
 class UserFieldsPrepareMixin:

@@ -30,7 +30,7 @@
     {% if answer.user_liked != -1 %}
     <button class="btn btn-outline-success btn-sm vote-btn {% if answer.user_liked == 1 %}pressed{% endif %}" 
       data-answer="{{ answer.id }}" data-type="1"
-      {% if not logined or answer.user_liked == 1 %}disabled{% endif %}>
+      {% if not user_logined or answer.user_liked == 1 %}disabled{% endif %}>
       <strong>+</strong>
     </button>
     {% endif %}
@@ -40,7 +40,7 @@
     {% if answer.user_liked != 1 %}
     <button class="btn btn-outline-danger btn-sm vote-btn {% if answer.user_liked == -1 %}pressed{% endif %}"
       data-answer="{{ answer.id }}" data-type="-1"
-      {% if not logined or answer.user_liked == -1%}disabled{% endif %}>
+      {% if not user_logined or answer.user_liked == -1%}disabled{% endif %}>
       <strong>-</strong>
     </button>
     {% endif %}
