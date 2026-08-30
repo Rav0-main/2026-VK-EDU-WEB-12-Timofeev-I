@@ -1,29 +1,30 @@
 <ul class="pagination">
-  {% if page.has_previous %}
-  <li class="page-item"><a class="page-link" href="?page={{ page.previous_page_number }}"><<</a></li>
+  {% if pagination.page.has_previous %}
+  <li class="page-item"><a class="page-link" href="?page={{ pagination.page.previous_page_number }}"><<</a></li>
   {% else %}
   <li class="page-item disabled"><a class="page-link"><<</a></li>
   {% endif %}
 
-  {% if first_page %}
+  {% if pagination.first_page %}
   <li class="page-item active"><a class="page-link" style="background-color: rgb(157, 211, 243); border-color: rgb(157, 211, 243);"
-    href="?page={{ first_page }}">{{ first_page }}</a></li>
+    href="?page={{ pagination.first_page }}">{{ pagination.first_page }}</a></li>
   <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
   {% endif %}
 
-  {% for p in pagination_range %}
-  <li class="page-item active"><a class="page-link" {% if p != page.number %}style="background-color: rgb(157, 211, 243); border-color: rgb(157, 211, 243);{% endif %}
+  {% for p in pagination.range %}
+  <li class="page-item active"><a class="page-link"
+    {% if p != pagination.page.number %}style="background-color: rgb(157, 211, 243); border-color: rgb(157, 211, 243);"{% endif %}
     href="?page={{ p }}">{{ p }}</a></li>
   {% endfor %}
 
-  {% if last_page %}
+  {% if pagination.last_page %}
   <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
   <li class="page-item active"><a class="page-link" style="background-color: rgb(157, 211, 243); border-color: rgb(157, 211, 243);"
-    href="?page={{ last_page }}">{{ last_page }}</a></li>
+    href="?page={{ pagination.last_page }}">{{ pagination.last_page }}</a></li>
   {% endif %}
 
-  {% if page.has_next %}
-  <li class="page-item"><a class="page-link" href="?page={{ page.next_page_number }}">>></a></li>
+  {% if pagination.page.has_next %}
+  <li class="page-item"><a class="page-link" href="?page={{ pagination.page.next_page_number }}">>></a></li>
   {% else %}
   <li class="page-item disabled"><a class="page-link">>></a></li>
 	{% endif %}

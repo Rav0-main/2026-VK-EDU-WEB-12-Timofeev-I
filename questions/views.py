@@ -5,6 +5,7 @@ from django import http
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 
+from application import config
 from questions import forms
 from questions.models import Question, QuestionLike, Answer, AnswerLike
 from questions import pagination
@@ -18,19 +19,15 @@ class NewQuestionsView(CommonViewContextMixin, TemplateView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context |= self.get_common_context(self.request)
-
-        page_number = pagination.get_page_number_from(self.request)
         
         new_questions = Question.objects.get_new_questions(self.request.user if context["logined"] else None)
-        
-        page, page_range = pagination.get_page_and_page_range_of(new_questions, page_number)
-        pagination_range = pagination.get_pagination_page_range(page.number, page_range)
+        paginator = pagination.PaginationManager(
+            self.request, new_questions,
+            pagination.DEFAULT_PAGE_NUMBER, config.QUESTIONS_PER_PAGE
+        )
 
-        context["first_page"] = page_range.start if page_range.start != pagination_range.start else None
-        context["questions"] = page.object_list
-        context["pagination_range"] = pagination_range
-        context["last_page"] = page_range.stop - 1 if pagination_range.stop != page_range.stop else None
-        context["page"] = page
+        context["pagination"] = paginator
+        context["questions"] = paginator.page.object_list
 
         return context
     
@@ -42,18 +39,13 @@ class HotQuestionsView(CommonViewContextMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context |= self.get_common_context(self.request)
 
-        page_number: int = pagination.get_page_number_from(self.request)
-
         hot_questions = Question.objects.get_hot_questions(self.request.user if context["logined"] else None)
+        paginator = pagination.PaginationManager(
+            self.request, hot_questions, pagination.DEFAULT_PAGE_NUMBER, config.QUESTIONS_PER_PAGE
+        )
 
-        page, page_range = pagination.get_page_and_page_range_of(hot_questions, page_number)
-        pagination_range = pagination.get_pagination_page_range(page.number, page_range)
-
-        context["first_page"] = page_range.start if page_range.start != pagination_range.start else None
-        context["questions"] = page.object_list
-        context["pagination_range"] = pagination_range
-        context["last_page"] = page_range.stop - 1 if pagination_range.stop != page_range.stop else None
-        context["page"] = page
+        context["questions"] = paginator.page.object_list
+        context["pagination"] = paginator
 
         return context
     
@@ -146,19 +138,14 @@ class QuestionView(CommonViewContextMixin, TemplateView):
         question = Question.objects.get_question_by_id(question_id, self.request.user if context["logined"] else None)
         user_is_question_author = Question.objects.is_question_author(self.request.user if context["logined"] else None, question)
     
-        page_number = pagination.get_page_number_from(self.request)
-
         answers = Question.objects.get_answers(question_id, self.request.user if context["logined"] else None)
+        paginator = pagination.PaginationManager(
+            self.request, answers, pagination.DEFAULT_PAGE_NUMBER, config.ANSWERS_PER_PAGE
+        )
 
-        page, page_range = pagination.get_page_and_page_range_of(answers, page_number)
-        pagination_range = pagination.get_pagination_page_range(page.number, page_range)
-
-        context["first_page"] = page_range.start if page_range.start != pagination_range.start else None
         context["question"] = question
-        context["pagination_range"] = pagination_range
-        context["last_page"] = page_range.stop - 1 if pagination_range.stop != page_range.stop else None
-        context["page"] = page
-        context["answers"] = page.object_list
+        context["pagination"] = paginator
+        context["answers"] = paginator.page.object_list
         context["form"] = forms.AddAnswerForm(self.request, question_id)
         context["user_is_question_author"] = user_is_question_author
 
@@ -173,18 +160,13 @@ class QuestionsByTagView(CommonViewContextMixin, TemplateView):
         context |= self.get_common_context(self.request)
         tag_name: str = kwargs["tag_name"]
 
-        page_number = pagination.get_page_number_from(self.request)
-
         questions_with_tag = Question.objects.get_questions_with_tag(tag_name, self.request.user if context["logined"] else None)
+        paginator = pagination.PaginationManager(
+            self.request, questions_with_tag, pagination.DEFAULT_PAGE_NUMBER, config.QUESTIONS_PER_PAGE
+        )
 
-        page, page_range = pagination.get_page_and_page_range_of(questions_with_tag, page_number)
-        pagination_range = pagination.get_pagination_page_range(page.number, page_range)
-
-        context["first_page"] = page_range.start if page_range.start != pagination_range.start else None
-        context["questions"] = page.object_list
-        context["pagination_range"] = pagination_range
-        context["last_page"] = page_range.stop - 1 if pagination_range.stop != page_range.stop else None
-        context["page"] = page
+        context["questions"] = paginator.page.object_list
+        context["pagination"] = paginator
         context["tag"] = tag_name
 
         return context
