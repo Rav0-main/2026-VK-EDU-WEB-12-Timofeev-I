@@ -21,13 +21,13 @@ class UserLoginView(CommonViewContextMixin, RedirectUrlValidatorMixin, View):
 
         form = forms.UserLoginForm(request, request.POST)
 
+        if form.is_valid():
+            auth.login(request, form.auth_user)
+            return http.HttpResponseRedirect(redirect_url)
+
         context = self.get_common_context(request)
         context["redirect_url"] = redirect_url
         context["form"] = form
-
-        if form.is_valid():
-            auth.login(request, form.authenticated_user)
-            return http.HttpResponseRedirect(redirect_url)
 
         return render(request, self.template_name, context=context)
     
@@ -52,14 +52,14 @@ class UserRegisterView(CommonViewContextMixin, View):
 
     def post(self, request: http.HttpRequest):
         form = forms.UserRegisterForm(request, request.POST, request.FILES)
-        context = self.get_common_context(request)
 
         if form.is_valid():
-            registered_user = form.save()
-            auth.login(request, registered_user)
+            user = form.save()
+            auth.login(request, user)
 
             return http.HttpResponseRedirect(reverse("questions:index"))
-        
+
+        context = self.get_common_context(request)
         context["form"] = form
 
         return render(request, self.template_name, context=context)
@@ -101,7 +101,6 @@ class UserProfileView(LoginRequiredMixin, CommonViewContextMixin, View):
 
         if form.is_valid():
             form.save()
-            return http.HttpResponseRedirect(reverse("core:settings"))
 
         return render(request, self.template_name, context=context)
 

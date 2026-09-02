@@ -29,13 +29,20 @@ class AddAnswerForm(forms.ModelForm):
             ).first():
             raise forms.ValidationError("Вы также отвечали на этот вопрос ранее.")
 
-    def save(self):
+        return self.cleaned_data
+
+    def save(self, commit: bool = True):
+        answer = Answer(
+            question=self.question, content=self.cleaned_data["content"],
+            author=self.request.user
+        )
+
+        if not commit:
+            return answer
+
         try:
-            return Answer.objects.create(
-                question=self.question, content=self.cleaned_data["content"],
-                author=self.request.user
-            )
-        
+            answer.save()
+
         except IntegrityError:
             return Answer.objects.filter(
                 question=self.question, content=self.cleaned_data["content"],
@@ -66,7 +73,9 @@ class AskForm(forms.ModelForm):
         if exist_question is not None:
             raise forms.ValidationError("Такой вопрос уже существует")
 
-    def save(self):
+        return cleaned_data
+
+    def save(self, commit: bool = True):
         tags_list: set[str] = set(map(lambda s: s.lower(), self.cleaned_data["tags"].split()))
 
         exist_tags = TagContent.objects.filter(name__in=tags_list)
@@ -96,4 +105,3 @@ class AskForm(forms.ModelForm):
         )
 
         return question
-    

@@ -18,8 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_FILENAME = ".env"
 
 env = environ.Env(
-    DEBUG=(bool, True),
-    DATABASE_PORT=(int, 5432)
+    DEBUG=(bool, True)
 )
 
 environ.Env.read_env(BASE_DIR / ENV_FILENAME)

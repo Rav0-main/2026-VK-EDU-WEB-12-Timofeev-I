@@ -68,7 +68,7 @@
                 Профиль
               </button>
             </a>
-            <form method="POST" action="{% url "core:logout" %}?stay_on={{ current_url }}">
+            <form method="POST" action="{% url 'core:logout' %}?stay_on={{ current_url }}">
               {% csrf_token %}
 
               <button class="btn btn-danger btn-sm">

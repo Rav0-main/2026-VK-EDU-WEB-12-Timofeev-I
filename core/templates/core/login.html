@@ -22,7 +22,7 @@
 {% endfor %}
 
 <form class="mb-4" style="margin-right: 1.0rem; max-width: 500px;"
-  method="POST" action="{% url 'core:login' %}?next={{ redirect_url }}">
+  method="POST" action="?next={{ redirect_url }}">
   {% csrf_token %}
 
   <div class="form-group mb-3">

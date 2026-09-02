@@ -44,18 +44,18 @@ class CommonViewContextMixin:
 
 class UserFieldsPrepareMixin:
     def prepare_user_data(self, user_data: dict[str, Any]):
-        user_data["username"] = self.get_username(user_data.get("username"))
-        user_data["email"] = self.get_email(user_data.get("email"))
-        user_data["nickname"] = self.get_nickname(user_data.get("nickname"))
+        user_data["username"] = self.prepare_username(user_data.get("username", ""))
+        user_data["email"] = self.prepare_email(user_data.get("email", ""))
+        user_data["nickname"] = self.prepare_nickname(user_data.get("nickname", ""))
 
-    def get_username(self, username: str | None) -> str | None:
-        return None if username is None else username.strip().lower()
+    def prepare_username(self, username: str) -> str:
+        return username.strip().lower()
 
-    def get_email(self, email: str | None) -> str | None:
-        return None if email is None else email.strip()
+    def prepare_email(self, email: str) -> str:
+        return email.strip()
     
-    def get_nickname(self, nickname: str | None) -> str | None:
-        return None if nickname is None else nickname.strip()
+    def prepare_nickname(self, nickname: str) -> str:
+        return nickname.strip()
     
 
 class RedirectUrlValidatorMixin:
