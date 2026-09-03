@@ -5,7 +5,8 @@ from core.models import UserProfile
 from core.managers import get_best_members
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.conf import settings
-
+import jwt
+from time import time
 
 class CommonViewContextMixin:
     __slots__ = ["__user"]
@@ -19,6 +20,11 @@ class CommonViewContextMixin:
         context["current_url"] = request.path
         
         if context["user_logined"]:
+            context["user_jwt_token"] = jwt.encode(
+                {"sub": f"{request.user.pk}", "exp": int(time()) + 30 * 60},
+                settings.CENTRIFUGE_HMAC_SECRET, algorithm="HS256"
+            )
+
             try:
                 context["user_nickname"] = request.user.profile.nickname
                 self.__user = request.user

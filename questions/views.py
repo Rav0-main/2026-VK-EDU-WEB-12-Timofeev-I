@@ -58,13 +58,25 @@ class AnswerAddView(LoginRequiredMixin, CommonViewContextMixin, View):
 
     def post(self, request: http.HttpRequest, question_id: int):
         context = self.get_common_context(request)
-        form = forms.AddAnswerForm(request, question_id, request.POST)
-        context["form"] = form
+        form = forms.AnswerAddForm(request, question_id, request.POST)
 
         if form.is_valid():
-            form.save()
-            return http.HttpResponseRedirect(reverse("questions:question", kwargs={"question_id": question_id}))
+            answer = form.save()
+            answers = Question.objects.get_answers(question_id, request.user)
+            paginator = pagination.Paginator(
+                answers, config.ANSWERS_PER_PAGE
+            )
+            answer_page = next(
+                page_number
+                for page_number in paginator.page_range
+                if answer in paginator.page(page_number).object_list
+            )
+            return http.HttpResponseRedirect(
+                reverse("questions:question", kwargs={"question_id": question_id})
+                + f"?page={answer_page}#answer-{answer.pk}"
+            )
 
+        context["form"] = form
         return render(request, self.template_name, context=context)
     
 
@@ -146,7 +158,7 @@ class QuestionView(CommonViewContextMixin, TemplateView):
         context["question"] = question
         context["pagination"] = paginator
         context["answers"] = paginator.page.object_list
-        context["form"] = forms.AddAnswerForm(self.request, question_id)
+        context["form"] = forms.AnswerAddForm(self.request, question_id)
         context["user_is_question_author"] = user_is_question_author
 
         return context

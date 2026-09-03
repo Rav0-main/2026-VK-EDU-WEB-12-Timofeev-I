@@ -1,0 +1,16 @@
+<div class="popular-tags">
+  <div class="text-center mb-3">
+    <h2 class="section-title">Популярные теги</h2>
+  </div>
+  
+  <div class="popular-tags-content">
+    {% for popular_tag in popular_tags %}
+    <a href="{% url 'questions:tag' tag_name=popular_tag.name %}">
+      <span class="popular-tag"
+        style="color: {{ popular_tag.color }}; font-size: {{ popular_tag.font_size }};">
+        {{ popular_tag.name }}
+      </span>
+    </a>
+    {% endfor %}
+  </div>
+</div>

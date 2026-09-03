@@ -1,4 +1,4 @@
-<div class="answer d-flex {% if answer.is_correct %}correct-answer{% endif %}">
+<div class="answer d-flex {% if answer.is_correct %}correct-answer{% endif %}" id="answer-{{ answer.pk }}">
   <div class="answer-avatar">
     <img src="{% if answer.author.profile.avatar %}{{ answer.author.profile.avatar.url }}{% else %}#{% endif %}"
     class="answer-avatar img-fluid">

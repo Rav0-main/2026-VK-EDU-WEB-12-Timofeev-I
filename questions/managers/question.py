@@ -32,7 +32,7 @@ class QuestionManager(models.Manager):
         try:
             answers = self.get(id=question_id).answers
 
-            vote_subquery = models.Subquery(
+            votes_subquery = models.Subquery(
                 AnswerLike.objects
                 .filter(answer=models.OuterRef("pk"))
                 .values("answer")
@@ -51,16 +51,16 @@ class QuestionManager(models.Manager):
                 )
 
                 return answers.annotate(
-                    vote_count=Coalesce(vote_subquery, 0),
+                    vote_count=Coalesce(votes_subquery, 0),
                     user_liked=Coalesce(user_liked_subquery, 0)
-                ).order_by("-is_correct", "-vote_count", "-published_datetime") \
+                ).order_by("-vote_count", "-is_correct", "-published_datetime") \
                 .prefetch_related("author__profile")
 
             else:
                 return answers.annotate(
-                    vote_count=Coalesce(vote_subquery, 0),
+                    vote_count=Coalesce(votes_subquery, 0),
                     user_liked=models.Value(0)
-                ).order_by("-is_correct", "-vote_count", "-published_datetime") \
+                ).order_by("-vote_count", "-is_correct", "-published_datetime") \
                 .prefetch_related("author__profile")
 
         except exceptions.ObjectDoesNotExist:

@@ -5,7 +5,7 @@ from questions.models.tag import TagContent, Tag
 from questions.models.answer import Answer
 from questions.models.question import Question
 
-class AddAnswerForm(forms.ModelForm):
+class AnswerAddForm(forms.ModelForm):
     class Meta:
         model = Answer
         fields = ["content"]
@@ -31,7 +31,7 @@ class AddAnswerForm(forms.ModelForm):
 
         return self.cleaned_data
 
-    def save(self, commit: bool = True):
+    def save(self, commit: bool = True) -> Answer:
         answer = Answer(
             question=self.question, content=self.cleaned_data["content"],
             author=self.request.user
@@ -44,10 +44,12 @@ class AddAnswerForm(forms.ModelForm):
             answer.save()
 
         except IntegrityError:
-            return Answer.objects.filter(
+            return Answer.objects.get(
                 question=self.question, content=self.cleaned_data["content"],
                 author=self.request.user
-            ).first()
+            )
+
+        return answer
         
 
 class AskForm(forms.ModelForm):
