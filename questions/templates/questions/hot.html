@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
 
 {% load static %}
+
 {% block head %}
+
 <link rel="stylesheet" href="{% static 'questions/css/index.css' %}">
+<script src="{% static 'js/cookie.js' %}"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -24,5 +28,6 @@
 
 {% include 'questions/partials/question_list.html' %}
 {% include 'questions/partials/pagination.html' %}
+
 {% include "questions/partials/question_like_script.html" %}
 {% endblock %}

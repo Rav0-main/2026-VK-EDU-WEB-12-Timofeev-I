@@ -77,7 +77,7 @@ class AskForm(forms.ModelForm):
 
         return cleaned_data
 
-    def save(self, commit: bool = True):
+    def save(self, commit: bool = True) -> Question:
         tags_list: set[str] = set(map(lambda s: s.lower(), self.cleaned_data["tags"].split()))
 
         exist_tags = TagContent.objects.filter(name__in=tags_list)
@@ -89,9 +89,9 @@ class AskForm(forms.ModelForm):
                 author=self.request.user
             )
         except IntegrityError:
-            return Question.objects.filter(
+            return Question.objects.get(
                 title=self.cleaned_data["title"], content=self.cleaned_data["content"]
-            ).first()
+            )
         
 
         Tag.objects.bulk_create(

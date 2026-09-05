@@ -24,6 +24,7 @@ class CommonViewContextMixin:
                 {"sub": f"{request.user.pk}", "exp": int(time()) + 30 * 60},
                 settings.CENTRIFUGE_HMAC_SECRET, algorithm="HS256"
             )
+            context["user_id"] = request.user.pk
 
             try:
                 context["user_nickname"] = request.user.profile.nickname

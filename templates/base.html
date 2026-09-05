@@ -14,6 +14,7 @@
   
   {% if user_logined %}
   <link rel="stylesheet" href="{% static 'css/avatar.css' %}">
+  <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
   {% endif %}
 
   {% block head %}
@@ -102,6 +103,10 @@
 
       {% block content %}
       {% endblock %}
+
+      {% if user_logined %}
+      <div class="notification-container" id="notifContainer"></div>
+      {% endif %}
       
     </div>
 
@@ -118,6 +123,81 @@
       <p>Интересна та или иная тема? Задай вопрос или найди уже готовый ответ.</p>
     </div>
   </div>
+
+  {% if user_logined %}
+  <script src="https://unpkg.com/centrifuge@5.4.0/dist/centrifuge.js"></script>
+  <script type="text/javascript">
+    const centrifuge = new Centrifuge("ws://127.0.0.1:8000/connection/websocket", {
+      token: "{{ user_jwt_token }}"
+    });
+
+    centrifuge.on('connecting', function (ctx) {
+      console.log(`connecting: ${ctx.code}, ${ctx.reason}`);
+    }).on('connected', function (ctx) {
+      console.log(`connected over ${ctx.transport}`);
+    }).on('disconnected', function (ctx) {
+      console.log(`disconnected: ${ctx.code}, ${ctx.reason}`);
+    }).connect();
+
+    const sub = centrifuge.newSubscription("notifications:user-{{ user_id }}");
+    const question_link = "{% url 'questions:question' question_id=0 %}"
+
+    sub.on('publication', function (ctx) {
+      console.log(ctx);
+      showSimpleNotification(
+        `Вам ответил '${ctx.data.author_nickname}'.`,
+        truncateString(ctx.data.message, 76),
+        question_link.replace("0", ctx.data.question_id) + `?page=${ctx.data.answer_page}#answer-${ctx.data.answer_id}`,
+        7
+      )
+    }).on('subscribing', function (ctx) {
+      console.log(`subscribing: ${ctx.code}, ${ctx.reason}`);
+    }).on('subscribed', function (ctx) {
+      console.log('subscribed', ctx);
+    }).on('unsubscribed', function (ctx) {
+      console.log(`unsubscribed: ${ctx.code}, ${ctx.reason}`);
+    }).subscribe();
+  </script>
+  {% endif %}
+
+  {% if user_logined %}
+  <script>
+    function truncateString(str, length) {
+    if (str.length > length) {
+        return str.slice(0, length) + '...';
+    }
+    return str;
+}
+  function showSimpleNotification(title, text, link, duration) {
+    const container = document.getElementById('notifContainer');
+    
+    const notif = document.createElement('div');
+    notif.className = 'notification';
+    notif.innerHTML = `
+        <button class="notification-close" onclick="this.parentElement.remove()">×</button>
+        <strong>${title}</strong>
+        <p style="margin:5px 0 0">${text}</p>
+        <a style="link-success" href=${link}>Посмотреть ответ можно тут</a>
+        <div class="timer-bar" style="width:100%"></div>
+    `;
+    
+    container.appendChild(notif);
+    
+    let timeLeft = duration;
+    const timerBar = notif.querySelector('.timer-bar');
+    
+    const interval = setInterval(() => {
+        timeLeft -= 0.1;
+        timerBar.style.width = (timeLeft / duration) * 100 + '%';
+    }, 100);
+    
+    setTimeout(() => {
+        clearInterval(interval);
+        notif.remove();
+    }, duration * 1000);
+}
+</script>
+  {% endif %}
 
 </body>
 

@@ -2,6 +2,7 @@ from typing import Any
 from django.views.generic.base import TemplateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django import http
+from django.conf import settings
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 
@@ -11,7 +12,9 @@ from questions.models import Question, QuestionLike, Answer, AnswerLike
 from questions import pagination
 
 from core.mixins import CommonViewContextMixin
+from questions.notifications import NotificationCentrifugeManager
 
+# websocket ideas: new answer in current question
 
 class NewQuestionsView(CommonViewContextMixin, TemplateView):
     template_name: str = "questions/index.html"
@@ -71,6 +74,21 @@ class AnswerAddView(LoginRequiredMixin, CommonViewContextMixin, View):
                 for page_number in paginator.page_range
                 if answer in paginator.page(page_number).object_list
             )
+
+            notification = NotificationCentrifugeManager(
+                settings.CENTRIFUGE_URL,
+                settings.CENTRIFUGE_API_KEY
+            )
+
+            notification.notificate(
+                question_author_id=answer.question.author.id,
+                question_id=question_id,
+                answer_page=answer_page,
+                answer_id=answer.pk,
+                author_nickname=answer.author.profile.nickname,
+                message=answer.content
+            )
+            
             return http.HttpResponseRedirect(
                 reverse("questions:question", kwargs={"question_id": question_id})
                 + f"?page={answer_page}#answer-{answer.pk}"
@@ -199,10 +217,10 @@ class AskView(LoginRequiredMixin, CommonViewContextMixin, View):
     def post(self, request: http.HttpRequest):
         context = self.get_common_context(request)
         form = forms.AskForm(request, request.POST)
-        context["form"] = form
 
         if form.is_valid():
             question = form.save()
             return http.HttpResponseRedirect(reverse("questions:question", args=[question.pk]))
-        
+
+        context["form"] = form
         return render(request, self.template_name, context=context)
