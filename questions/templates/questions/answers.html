@@ -31,24 +31,25 @@
   </h2>
 </div>
 
+<div id="answers-list">
 {% if answers %}
-
 {% for answer in answers %}
 
 {% include 'questions/partials/answer.html' %}
 
 {% endfor %}
 
-{% include 'questions/partials/answer_like_script.html' %}
-{% include 'questions/partials/answer_set_correct_script.html' %}
-
 {% else %}
 
-<div class="mb-3 text-danger" style="font-size: 1.2rem; font-weight: 500">
+<div id="no-answers-message" class="mb-3 text-danger" style="font-size: 1.2rem; font-weight: 500">
   Ответов нет. Вы можете стать первым!
 </div>
 
 {% endif %}
+</div>
+
+{% include 'questions/partials/answer_like_script.html' %}
+{% include 'questions/partials/answer_set_correct_script.html' %}
 
 {% include 'questions/partials/pagination.html' %}
 
@@ -68,4 +69,15 @@
 
 {% endif %}
 
+{% if user_logined and question %}
+<script src="{% static 'questions/js/answer_real_time.js' %}"></script>
+
+<script>
+answer_real_time(
+  {{ question.id }},
+  {% if user_is_question_author %}true{% else %}false{% endif %}
+);
+</script>
+
+{% endif %}
 {% endblock %}

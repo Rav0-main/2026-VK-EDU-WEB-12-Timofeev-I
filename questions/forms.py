@@ -5,6 +5,7 @@ from questions.models.tag import TagContent, Tag
 from questions.models.answer import Answer
 from questions.models.question import Question
 
+
 class AnswerAddForm(forms.ModelForm):
     class Meta:
         model = Answer
@@ -24,17 +25,19 @@ class AnswerAddForm(forms.ModelForm):
             raise forms.ValidationError("Вы должны ввести ответ.")
 
         if Answer.objects.filter(
-                question=self.question, content=self.cleaned_data["content"],
-                author=self.request.user
-            ).first():
+            question=self.question,
+            content=self.cleaned_data["content"],
+            author=self.request.user,
+        ).first():
             raise forms.ValidationError("Вы также отвечали на этот вопрос ранее.")
 
         return self.cleaned_data
 
     def save(self, commit: bool = True) -> Answer:
         answer = Answer(
-            question=self.question, content=self.cleaned_data["content"],
-            author=self.request.user
+            question=self.question,
+            content=self.cleaned_data["content"],
+            author=self.request.user,
         )
 
         if not commit:
@@ -45,12 +48,13 @@ class AnswerAddForm(forms.ModelForm):
 
         except IntegrityError:
             return Answer.objects.get(
-                question=self.question, content=self.cleaned_data["content"],
-                author=self.request.user
+                question=self.question,
+                content=self.cleaned_data["content"],
+                author=self.request.user,
             )
 
         return answer
-        
+
 
 class AskForm(forms.ModelForm):
     class Meta:
@@ -78,28 +82,31 @@ class AskForm(forms.ModelForm):
         return cleaned_data
 
     def save(self, commit: bool = True) -> Question:
-        tags_list: set[str] = set(map(lambda s: s.lower(), self.cleaned_data["tags"].split()))
+        tags_list: set[str] = set(
+            map(lambda s: s.lower(), self.cleaned_data["tags"].split())
+        )
 
         exist_tags = TagContent.objects.filter(name__in=tags_list)
         exist_tag_names = set(tag.name for tag in exist_tags)
 
         try:
             question = Question.objects.create(
-                title=self.cleaned_data["title"], content=self.cleaned_data["content"],
-                author=self.request.user
+                title=self.cleaned_data["title"],
+                content=self.cleaned_data["content"],
+                author=self.request.user,
             )
         except IntegrityError:
             return Question.objects.get(
                 title=self.cleaned_data["title"], content=self.cleaned_data["content"]
             )
-        
 
         Tag.objects.bulk_create(
             Tag(question=question, content=exist_tag) for exist_tag in exist_tags
         )
 
         tag_contents = TagContent.objects.bulk_create(
-            TagContent(name=not_exist_tag) for not_exist_tag in tags_list.difference(exist_tag_names)
+            TagContent(name=not_exist_tag)
+            for not_exist_tag in tags_list.difference(exist_tag_names)
         )
 
         Tag.objects.bulk_create(

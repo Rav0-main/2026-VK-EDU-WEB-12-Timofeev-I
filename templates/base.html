@@ -15,6 +15,15 @@
   {% if user_logined %}
   <link rel="stylesheet" href="{% static 'css/avatar.css' %}">
   <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+  
+  <script src="{% static 'js/notification.js' %}"></script>
+
+  <script src="https://unpkg.com/centrifuge@5.4.0/dist/centrifuge.js"></script>
+  <script src="{% static 'js/centrifuge.js' %}"></script>
+
+  <script type="text/javascript">
+    const centrifuge = centrifuge_connect("{{ user_jwt_token }}");
+  </script>
   {% endif %}
 
   {% block head %}
@@ -125,31 +134,16 @@
   </div>
 
   {% if user_logined %}
-  <script src="https://unpkg.com/centrifuge@5.4.0/dist/centrifuge.js"></script>
   <script type="text/javascript">
-    const centrifuge = new Centrifuge("ws://127.0.0.1:8000/connection/websocket", {
-      token: "{{ user_jwt_token }}"
-    });
+    const sub_notifications = centrifuge.newSubscription("notifications:users:{{ user_id }}");
 
-    centrifuge.on('connecting', function (ctx) {
-      console.log(`connecting: ${ctx.code}, ${ctx.reason}`);
-    }).on('connected', function (ctx) {
-      console.log(`connected over ${ctx.transport}`);
-    }).on('disconnected', function (ctx) {
-      console.log(`disconnected: ${ctx.code}, ${ctx.reason}`);
-    }).connect();
-
-    const sub = centrifuge.newSubscription("notifications:user-{{ user_id }}");
-    const question_link = "{% url 'questions:question' question_id=0 %}"
-
-    sub.on('publication', function (ctx) {
-      console.log(ctx);
-      showSimpleNotification(
+    sub_notifications.on('publication', function (ctx) {
+      show_notification(
         `Вам ответил '${ctx.data.author_nickname}'.`,
-        truncateString(ctx.data.message, 76),
-        question_link.replace("0", ctx.data.question_id) + `?page=${ctx.data.answer_page}#answer-${ctx.data.answer_id}`,
+        truncate(ctx.data.message, 76),
+        ctx.data.answer_url,
         7
-      )
+      );
     }).on('subscribing', function (ctx) {
       console.log(`subscribing: ${ctx.code}, ${ctx.reason}`);
     }).on('subscribed', function (ctx) {
@@ -159,46 +153,6 @@
     }).subscribe();
   </script>
   {% endif %}
-
-  {% if user_logined %}
-  <script>
-    function truncateString(str, length) {
-    if (str.length > length) {
-        return str.slice(0, length) + '...';
-    }
-    return str;
-}
-  function showSimpleNotification(title, text, link, duration) {
-    const container = document.getElementById('notifContainer');
-    
-    const notif = document.createElement('div');
-    notif.className = 'notification';
-    notif.innerHTML = `
-        <button class="notification-close" onclick="this.parentElement.remove()">×</button>
-        <strong>${title}</strong>
-        <p style="margin:5px 0 0">${text}</p>
-        <a style="link-success" href=${link}>Посмотреть ответ можно тут</a>
-        <div class="timer-bar" style="width:100%"></div>
-    `;
-    
-    container.appendChild(notif);
-    
-    let timeLeft = duration;
-    const timerBar = notif.querySelector('.timer-bar');
-    
-    const interval = setInterval(() => {
-        timeLeft -= 0.1;
-        timerBar.style.width = (timeLeft / duration) * 100 + '%';
-    }, 100);
-    
-    setTimeout(() => {
-        clearInterval(interval);
-        notif.remove();
-    }, duration * 1000);
-}
-</script>
-  {% endif %}
-
 </body>
 
 </html>

@@ -1,6 +1,7 @@
 from django.db import models, IntegrityError
 from questions.models._like_type import is_valid_like_type
 
+
 class AnswerLikeManager(models.Manager):
     def add_to(self, answer, like_type: str, user):
         if answer is None:
@@ -15,4 +16,3 @@ class AnswerLikeManager(models.Manager):
 
         except IntegrityError:
             return self.filter(type=like_type, answer=answer, author=user).first()
-        

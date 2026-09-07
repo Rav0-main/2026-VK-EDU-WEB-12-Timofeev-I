@@ -30,7 +30,7 @@ class UserLoginView(CommonViewContextMixin, RedirectUrlValidatorMixin, View):
         context["form"] = form
 
         return render(request, self.template_name, context=context)
-    
+
     def get(self, request: http.HttpRequest):
         redirect_url = request.GET.get("next", reverse("questions:index"))
         if not self.is_valid_redirect_url(request, redirect_url):
@@ -44,7 +44,7 @@ class UserLoginView(CommonViewContextMixin, RedirectUrlValidatorMixin, View):
         context["form"] = form
 
         return render(request, self.template_name, context=context)
-    
+
 
 class UserRegisterView(CommonViewContextMixin, View):
     template_name: str = "core/register.html"
@@ -63,14 +63,14 @@ class UserRegisterView(CommonViewContextMixin, View):
         context["form"] = form
 
         return render(request, self.template_name, context=context)
-    
+
     def get(self, request: http.HttpRequest):
         form = forms.UserRegisterForm(request)
         context = self.get_common_context(request)
         context["form"] = form
 
         return render(request, self.template_name, context=context)
-       
+
 
 class UserLogoutView(RedirectUrlValidatorMixin, View):
     http_method_names = ["post"]
@@ -111,7 +111,7 @@ class UserProfileView(LoginRequiredMixin, CommonViewContextMixin, View):
         context["form"] = form
 
         return render(request, self.template_name, context=context)
-    
+
 
 class Http404View(CommonViewContextMixin, TemplateView):
     template_name = "404.html"
