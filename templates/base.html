@@ -147,7 +147,7 @@
     }).on('subscribing', function (ctx) {
       console.log(`subscribing: ${ctx.code}, ${ctx.reason}`);
     }).on('subscribed', function (ctx) {
-      console.log('subscribed', ctx);
+      console.log('subscribed to channel', ctx.channel);
     }).on('unsubscribed', function (ctx) {
       console.log(`unsubscribed: ${ctx.code}, ${ctx.reason}`);
     }).subscribe();

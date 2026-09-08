@@ -2,7 +2,6 @@ from typing import Any
 from django.views.generic.base import TemplateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django import http
-from django.conf import settings
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 
@@ -12,9 +11,12 @@ from questions.models import Question, QuestionLike, Answer, AnswerLike
 from questions import pagination
 
 from core.mixins import CommonViewContextMixin
-from questions.centrifuge import NotificationCentrifugeManager, AnswerCentrifugeManager
-
-# websocket ideas: new answer in current question
+from questions.tasks import (
+    notificate_new_answer,
+    publish_new_answer,
+    publish_answer_correct,
+    publish_answer_new_vote_count,
+)
 
 
 class NewQuestionsView(CommonViewContextMixin, TemplateView):
@@ -91,20 +93,14 @@ class AnswerAddView(LoginRequiredMixin, CommonViewContextMixin, View):
 
             answer_url = question_url + f"#answer-{answer.pk}"
 
-            notifications_manager = NotificationCentrifugeManager(
-                settings.CENTRIFUGE_URL, settings.CENTRIFUGE_API_KEY
-            )
-            notifications_manager.notificate(
+            notificate_new_answer.delay(
                 question_author_id=answer.question.author.id,
                 answer_url=answer_url,
                 author_nickname=answer.author.profile.nickname,
                 message=answer.content,
             )
 
-            answers_manager = AnswerCentrifugeManager(
-                settings.CENTRIFUGE_URL, settings.CENTRIFUGE_API_KEY
-            )
-            answers_manager.publish_answer(
+            publish_new_answer.delay(
                 question_id=question_id,
                 answer_id=answer.pk,
                 question_url=question_url,
@@ -158,6 +154,11 @@ class AnswerLikeAddView(CommonViewContextMixin, View):
         if answer is None or like is None:
             return http.JsonResponse({}, status=403)
 
+        vote_count = Answer.objects.calc_vote_count_of(answer_id)
+        publish_answer_new_vote_count.delay(
+            answer_id=answer_id, new_vote_count=vote_count
+        )
+
         return http.JsonResponse({"answer_like_id": f"{like.pk}"}, status=200)
 
 
@@ -177,6 +178,7 @@ class AnswerSetCorrectView(CommonViewContextMixin, View):
             return http.JsonResponse({}, status=403)
 
         Answer.objects.set_correct(answer_id)
+        publish_answer_correct.delay(answer_id=answer_id)
 
         return http.JsonResponse({"answer_id": answer_id}, status=200)
 

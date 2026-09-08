@@ -1,11 +1,16 @@
 from cent import Client, PublishRequest, CentError
 from application.config import ANSWERS_PER_PAGE
+from typing import Final
+
+DEFAULT_CLIENT_TIMEOUT: Final[float] = 2.5
 
 
 class NotificationCentrifugeManager:
     __slots__ = ["__client"]
 
-    def __init__(self, api_url: str, api_key: str, timeout: float = 2.5):
+    def __init__(
+        self, api_url: str, api_key: str, timeout: float = DEFAULT_CLIENT_TIMEOUT
+    ):
         self.__client = Client(api_url, api_key, timeout=timeout)
 
     def notificate(
@@ -36,7 +41,9 @@ class NotificationCentrifugeManager:
 class AnswerCentrifugeManager:
     __slots__ = ["__client"]
 
-    def __init__(self, api_url: str, api_key: str, timeout: float = 2.5):
+    def __init__(
+        self, api_url: str, api_key: str, timeout: float = DEFAULT_CLIENT_TIMEOUT
+    ):
         self.__client = Client(api_url, api_key, timeout=timeout)
 
     def publish_answer(
@@ -63,6 +70,50 @@ class AnswerCentrifugeManager:
                 "answer_vote_count": answer_vote_count,
                 "content": content,
             },
+        )
+
+        try:
+            self.__client.publish(request)
+            return True
+
+        except CentError:
+            return False
+
+
+class AnswerLikeCentrifugeManager:
+    __slots__ = ["__client"]
+
+    def __init__(
+        self, api_url: str, api_key: str, timeout: float = DEFAULT_CLIENT_TIMEOUT
+    ):
+        self.__client = Client(api_url, api_key, timeout=timeout)
+
+    def publish_new_like(self, *, answer_id: int, new_vote_count: int):
+        request = PublishRequest(
+            channel=f"answers:{answer_id}:like",
+            data={"answer_id": answer_id, "vote_count": new_vote_count},
+        )
+
+        try:
+            self.__client.publish(request)
+            return True
+
+        except CentError:
+            return False
+
+
+class AnswerCorrectCentrifugeManager:
+    __slots__ = ["__client"]
+
+    def __init__(
+        self, api_url: str, api_key: str, timeout: float = DEFAULT_CLIENT_TIMEOUT
+    ):
+        self.__client = Client(api_url, api_key, timeout=timeout)
+
+    def publish_correct(self, *, answer_id: int):
+        request = PublishRequest(
+            channel=f"answers:{answer_id}:correct",
+            data={"answer_id": answer_id},
         )
 
         try:
